@@ -135,5 +135,5 @@ export function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-export const TOURNAMENT_DATE = new Date('2025-07-03T19:00:00-03:00');
+export const TOURNAMENT_DATE = new Date('2026-07-03T19:00:00-03:00');
 export const STORAGE_KEY = 'hangar14_scores_v2';
