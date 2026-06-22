@@ -1,65 +1,170 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+import ParticleBackground from '@/components/ParticleBackground';
+import Countdown from '@/components/Countdown';
+import AdminModal from '@/components/AdminModal';
+import TeamModal from '@/components/TeamModal';
+import Equipos from '@/components/tabs/Equipos';
+import Grupos from '@/components/tabs/Grupos';
+import Partidos from '@/components/tabs/Partidos';
+import Bracket from '@/components/tabs/Bracket';
+
+import {
+  Team,
+  Match,
+  buildInitialMatches,
+  resolveKnockout,
+  STORAGE_KEY,
+} from '@/lib/data';
+
+const TABS = [
+  { id: 'equipos',  label: 'Equipos'  },
+  { id: 'grupos',   label: 'Grupos'   },
+  { id: 'partidos', label: 'Partidos' },
+  { id: 'bracket',  label: 'Bracket'  },
+] as const;
+
+type TabId = typeof TABS[number]['id'];
 
 export default function Home() {
+  const [activeTab, setActiveTab]       = useState<TabId>('equipos');
+  const [matches, setMatches]           = useState<Match[]>(() => buildInitialMatches());
+  const [isAdmin, setIsAdmin]           = useState(false);
+  const [showAdmin, setShowAdmin]       = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+
+  // Load saved scores from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved: { id: string; score: [number, number] | null }[] = JSON.parse(raw);
+      setMatches(prev => {
+        const next = prev.map(m => {
+          const found = saved.find(s => s.id === m.id);
+          return found ? { ...m, score: found.score } : m;
+        });
+        return resolveKnockout(next);
+      });
+    } catch { /* ignore */ }
+  }, []);
+
+  const handleUpdateScore = (matchId: string, idx: 0 | 1, val: number) => {
+    setMatches(prev => {
+      const next = prev.map(m => {
+        if (m.id !== matchId) return m;
+        const score: [number, number] = m.score ? [...m.score] as [number, number] : [0, 0];
+        score[idx] = val;
+        return { ...m, score };
+      });
+      const resolved = resolveKnockout(next);
+      const toSave = resolved.map(m => ({ id: m.id, score: m.score }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+      return resolved;
+    });
+  };
+
+  const resolvedMatches = useMemo(() => resolveKnockout(matches), [matches]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="relative min-h-screen bg-black text-white">
+      <ParticleBackground />
+
+      <div className="relative z-10 max-w-lg mx-auto pb-20">
+
+        {/* Header */}
+        <header className="px-4 pt-10 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase mb-1">
+                3 de Julio · Hangar 14
+              </p>
+              <h1 className="text-xl font-semibold tracking-tight">
+                Mundial FIFA{' '}
+                <span style={{ color: '#C9A84C' }}>·</span>
+                {' '}Hangar 14
+              </h1>
+            </div>
+            <button
+              onClick={() => setShowAdmin(true)}
+              className="text-xs px-3 py-1.5 rounded transition-colors mt-1"
+              style={{
+                border: isAdmin ? '1px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)',
+                color: isAdmin ? '#C9A84C' : 'rgba(255,255,255,0.4)',
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              {isAdmin ? '⚡ Admin' : 'Admin'}
+            </button>
+          </div>
+          <Countdown />
+        </header>
+
+        {/* Tabs */}
+        <nav
+          className="flex sticky top-0 z-40 bg-black px-2"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className="relative flex-1 py-3 text-xs font-medium transition-colors"
+              style={{ color: activeTab === tab.id ? '#C9A84C' : 'rgba(255,255,255,0.35)' }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-px"
+                  style={{ background: '#C9A84C' }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                />
+              )}
+            </button>
+          ))}
+        </nav>
+
+        {/* Tab content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {activeTab === 'equipos' && (
+              <Equipos onSelect={setSelectedTeam} />
+            )}
+            {activeTab === 'grupos' && (
+              <Grupos matches={resolvedMatches} />
+            )}
+            {activeTab === 'partidos' && (
+              <Partidos
+                matches={resolvedMatches}
+                isAdmin={isAdmin}
+                onUpdateScore={handleUpdateScore}
+              />
+            )}
+            {activeTab === 'bracket' && (
+              <Bracket matches={resolvedMatches} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Modals */}
+      <TeamModal team={selectedTeam} onClose={() => setSelectedTeam(null)} />
+      <AdminModal
+        open={showAdmin}
+        isAdmin={isAdmin}
+        onClose={() => setShowAdmin(false)}
+        onLogin={() => { setIsAdmin(true); setShowAdmin(false); }}
+        onLogout={() => { setIsAdmin(false); setShowAdmin(false); }}
+      />
     </div>
   );
 }
