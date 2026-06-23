@@ -20,7 +20,35 @@ export interface Match {
   score: [number, number] | null;
   seedHome?: string;
   seedAway?: string;
+  round: number;
+  ps: 1 | 2;
 }
+
+// Pre-assigned schedule: round + PS station per match.
+// Group A (6 matches) interleaved with Group B (3 matches).
+// No-consecutive rule is best-effort; with 3-team Group B it's mathematically unavoidable
+// for some teams to play back-to-back (GER R1→R2, FRA R2→R3, BRA/HOL R4→R5).
+const MATCH_SCHEDULE: Record<string, { round: number; ps: 1 | 2 }> = {
+  // ── Ronda 1 ────────────────────────────────────────────────
+  a_arg_bra: { round: 1, ps: 1 },  // Argentina vs Brasil
+  b_ger_esp: { round: 1, ps: 2 },  // Alemania   vs España
+  // ── Ronda 2 ────────────────────────────────────────────────
+  a_fra_ned: { round: 2, ps: 1 },  // Francia    vs Holanda
+  b_ger_por: { round: 2, ps: 2 },  // Alemania   vs Portugal
+  // ── Ronda 3 ────────────────────────────────────────────────
+  a_arg_fra: { round: 3, ps: 1 },  // Argentina  vs Francia
+  b_esp_por: { round: 3, ps: 2 },  // España     vs Portugal
+  // ── Ronda 4 (solo PS1 — ningún equipo disponible para PS2) ─
+  a_bra_ned: { round: 4, ps: 1 },  // Brasil     vs Holanda
+  // ── Ronda 5 ────────────────────────────────────────────────
+  a_arg_ned: { round: 5, ps: 1 },  // Argentina  vs Holanda
+  a_bra_fra: { round: 5, ps: 2 },  // Brasil     vs Francia
+  // ── Semifinales ────────────────────────────────────────────
+  semi1:     { round: 6, ps: 1 },
+  semi2:     { round: 6, ps: 2 },
+  // ── Final ──────────────────────────────────────────────────
+  final:     { round: 7, ps: 1 },
+};
 
 export const GROUPS: Group[] = [
   {
@@ -49,23 +77,18 @@ export function buildInitialMatches(): Match[] {
     const teams = group.teams;
     for (let i = 0; i < teams.length; i++) {
       for (let j = i + 1; j < teams.length; j++) {
-        matches.push({
-          id: `${group.name.toLowerCase()}_${teams[i].id}_${teams[j].id}`,
-          phase: 'group',
-          group: gi,
-          home: teams[i],
-          away: teams[j],
-          score: null,
-        });
+        const id = `${group.name.toLowerCase()}_${teams[i].id}_${teams[j].id}`;
+        const sched = MATCH_SCHEDULE[id] ?? { round: 99, ps: 1 as const };
+        matches.push({ id, phase: 'group', group: gi, home: teams[i], away: teams[j], score: null, ...sched });
       }
     }
   });
 
-  matches.push({ id: 'semi1', phase: 'semi', home: null, away: null, score: null, seedHome: '1A', seedAway: '2B' });
-  matches.push({ id: 'semi2', phase: 'semi', home: null, away: null, score: null, seedHome: '1B', seedAway: '2A' });
-  matches.push({ id: 'final', phase: 'final', home: null, away: null, score: null });
+  matches.push({ id: 'semi1', phase: 'semi', home: null, away: null, score: null, seedHome: '1A', seedAway: '2B', ...MATCH_SCHEDULE['semi1'] });
+  matches.push({ id: 'semi2', phase: 'semi', home: null, away: null, score: null, seedHome: '1B', seedAway: '2A', ...MATCH_SCHEDULE['semi2'] });
+  matches.push({ id: 'final', phase: 'final', home: null, away: null, score: null, ...MATCH_SCHEDULE['final'] });
 
-  return matches;
+  return matches.sort((a, b) => a.round - b.round || a.ps - b.ps);
 }
 
 export interface StandingRow {

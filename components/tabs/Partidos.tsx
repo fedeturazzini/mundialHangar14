@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Match, GROUPS } from '@/lib/data';
+import { Match } from '@/lib/data';
 
 interface Props {
   matches: Match[];
@@ -29,7 +29,7 @@ function ScoreInput({
       placeholder="–"
       className="w-8 text-center text-lg font-semibold bg-transparent border-none outline-none tabular-nums"
       style={{
-        color: readonly ? '#fff' : '#fff',
+        color: '#fff',
         cursor: readonly ? 'default' : 'text',
         MozAppearance: 'textfield',
       } as React.CSSProperties}
@@ -48,22 +48,64 @@ function ScoreInput({
   );
 }
 
-function MatchCard({ match, isAdmin, onUpdateScore }: { match: Match; isAdmin: boolean; onUpdateScore: Props['onUpdateScore'] }) {
+function MatchRow({
+  match,
+  isAdmin,
+  onUpdateScore,
+}: {
+  match: Match;
+  isAdmin: boolean;
+  onUpdateScore: Props['onUpdateScore'];
+}) {
   const isFinal = match.phase === 'final';
-  const hasTeams = match.home && match.away;
+  const hasTeams = !!(match.home && match.away);
 
   return (
     <div
-      className="rounded-lg px-4 py-3"
+      className="rounded-lg"
       style={{
-        background: '#0D0D0D',
-        border: isFinal ? '1px solid rgba(201,168,76,0.25)' : '1px solid rgba(255,255,255,0.08)',
+        background: isFinal ? 'rgba(201,168,76,0.04)' : '#0D0D0D',
+        border: isFinal
+          ? '1px solid rgba(201,168,76,0.3)'
+          : '1px solid rgba(255,255,255,0.07)',
       }}
     >
-      <div className="flex items-center justify-between">
+      {/* PS label bar */}
+      <div
+        className="flex items-center gap-2 px-3 pt-2.5 pb-1.5"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+      >
+        <span
+          className="text-[10px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded"
+          style={{
+            background: 'rgba(201,168,76,0.12)',
+            color: '#C9A84C',
+            border: '1px solid rgba(201,168,76,0.2)',
+          }}
+        >
+          PS{match.ps}
+        </span>
+        <span className="text-[10px] text-white/25 tracking-wider uppercase">
+          {match.phase === 'group'
+            ? `Grupo ${match.group === 0 ? 'A' : 'B'}`
+            : match.phase === 'semi'
+            ? 'Semifinal'
+            : 'Final'}
+        </span>
+        {match.score && (
+          <span
+            className="ml-auto text-[10px] text-white/30 tracking-wider uppercase"
+          >
+            Finalizado
+          </span>
+        )}
+      </div>
+
+      {/* Teams + score */}
+      <div className="flex items-center gap-2 px-3 py-3">
         {/* Home */}
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">
+          <div className="text-sm font-semibold truncate">
             {match.home ? `${match.home.flag} ${match.home.name}` : (match.seedHome ?? '—')}
           </div>
           {match.home && (
@@ -74,13 +116,13 @@ function MatchCard({ match, isAdmin, onUpdateScore }: { match: Match; isAdmin: b
         </div>
 
         {/* Score */}
-        <div className="flex items-center gap-1 px-3 flex-shrink-0">
+        <div className="flex items-center gap-0.5 px-2 flex-shrink-0">
           <ScoreInput
             value={match.score ? match.score[0] : null}
             readonly={!isAdmin || !hasTeams}
             onChange={v => onUpdateScore(match.id, 0, v)}
           />
-          <span className="text-white/20 text-sm">:</span>
+          <span className="text-white/20 text-base px-0.5">:</span>
           <ScoreInput
             value={match.score ? match.score[1] : null}
             readonly={!isAdmin || !hasTeams}
@@ -90,7 +132,7 @@ function MatchCard({ match, isAdmin, onUpdateScore }: { match: Match; isAdmin: b
 
         {/* Away */}
         <div className="flex-1 min-w-0 text-right">
-          <div className="text-sm font-medium truncate">
+          <div className="text-sm font-semibold truncate">
             {match.away ? `${match.away.flag} ${match.away.name}` : (match.seedAway ?? '—')}
           </div>
           {match.away && (
@@ -101,11 +143,12 @@ function MatchCard({ match, isAdmin, onUpdateScore }: { match: Match; isAdmin: b
         </div>
       </div>
 
+      {/* Pending pill */}
       {!match.score && (
-        <div className="mt-2 text-center">
+        <div className="pb-2.5 text-center">
           <span
             className="text-[10px] px-2 py-0.5 rounded-full"
-            style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' }}
+            style={{ border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.25)' }}
           >
             {hasTeams ? 'pendiente' : 'esperando clasificación'}
           </span>
@@ -115,49 +158,74 @@ function MatchCard({ match, isAdmin, onUpdateScore }: { match: Match; isAdmin: b
   );
 }
 
+function roundLabel(round: number, phase: string): string {
+  if (phase === 'semi') return 'Semifinales';
+  if (phase === 'final') return 'Final';
+  return `Ronda ${round}`;
+}
+
 export default function Partidos({ matches, isAdmin, onUpdateScore }: Props) {
-  const groupMatches = (gi: number) => matches.filter(m => m.phase === 'group' && m.group === gi);
-  const semis = matches.filter(m => m.phase === 'semi');
-  const finals = matches.filter(m => m.phase === 'final');
+  // Group matches by round, preserving sort order (already sorted by round + ps in buildInitialMatches)
+  const rounds = matches.reduce<Map<number, Match[]>>((acc, m) => {
+    if (!acc.has(m.round)) acc.set(m.round, []);
+    acc.get(m.round)!.push(m);
+    return acc;
+  }, new Map());
 
   return (
-    <div className="px-4 pt-6 pb-10">
-      {GROUPS.map((group, gi) => (
-        <div key={group.name} className="mb-8">
-          <p className="text-xs text-white/30 tracking-widest uppercase mb-3">
-            Grupo {group.name} — Fase de grupos
-          </p>
-          <div className="space-y-2">
-            {groupMatches(gi).map((m, i) => (
-              <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                <MatchCard match={m} isAdmin={isAdmin} onUpdateScore={onUpdateScore} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      ))}
+    <div className="pt-6 pb-10">
+      {Array.from(rounds.entries()).map(([round, roundMatches], ri) => {
+        const firstMatch = roundMatches[0];
+        const isKnockout = firstMatch.phase !== 'group';
+        const label = roundLabel(round, firstMatch.phase);
 
-      <div className="mb-8">
-        <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Semifinales</p>
-        <div className="space-y-2">
-          {semis.map((m, i) => (
-            <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <MatchCard match={m} isAdmin={isAdmin} onUpdateScore={onUpdateScore} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
+        return (
+          <motion.div
+            key={round}
+            className="mb-6"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: ri * 0.05 }}
+          >
+            {/* Round header */}
+            <div className="flex items-center gap-3 mb-3">
+              {isKnockout ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-0.5 h-5 rounded-full" style={{ background: '#C9A84C' }} />
+                  <span className="text-sm font-bold tracking-[0.2em] uppercase" style={{ color: '#C9A84C' }}>
+                    {label}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <span
+                    className="text-xs font-bold tracking-[0.2em] uppercase"
+                    style={{ color: 'rgba(255,255,255,0.25)' }}
+                  >
+                    {label}
+                  </span>
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                  <span className="text-[10px] text-white/20">
+                    {roundMatches.length === 1 ? '1 partido' : `${roundMatches.length} en paralelo`}
+                  </span>
+                </>
+              )}
+            </div>
 
-      <div className="mb-8">
-        <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Final</p>
-        <div className="space-y-2">
-          {finals.map((m, i) => (
-            <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <MatchCard match={m} isAdmin={isAdmin} onUpdateScore={onUpdateScore} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
+            {/* Matches in this round */}
+            <div className="space-y-2">
+              {roundMatches.map(m => (
+                <MatchRow
+                  key={m.id}
+                  match={m}
+                  isAdmin={isAdmin}
+                  onUpdateScore={onUpdateScore}
+                />
+              ))}
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
