@@ -96,10 +96,6 @@ export default function TeamModal({ team, onClose }: Props) {
               ))}
             </div>
 
-            <p className="text-center text-xs mt-5" style={{ color: 'rgba(255,255,255,0.2)' }}>
-              Las fotos se actualizarán antes del torneo
-            </p>
-
             <button
               onClick={onClose}
               className="mt-4 w-full py-2.5 text-sm text-white/50 rounded-lg transition-colors hover:text-white/80"
