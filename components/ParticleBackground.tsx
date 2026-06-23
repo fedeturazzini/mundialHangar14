@@ -9,7 +9,11 @@ interface Particle {
   vy: number;
   radius: number;
   opacity: number;
+  gold: boolean;
 }
+
+const COUNT = 90;
+const CONNECT_DIST = 140;
 
 export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -22,7 +26,6 @@ export default function ParticleBackground() {
 
     let animId: number;
     const particles: Particle[] = [];
-    const COUNT = 40;
 
     const resize = () => {
       canvas.width  = window.innerWidth;
@@ -32,18 +35,40 @@ export default function ParticleBackground() {
     window.addEventListener('resize', resize);
 
     for (let i = 0; i < COUNT; i++) {
+      const gold = Math.random() < 0.6;
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        radius: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.08 + 0.04,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        radius: gold ? Math.random() * 1.7 + 0.8 : Math.random() * 1.0 + 0.5,
+        opacity: gold ? Math.random() * 0.08 + 0.06 : Math.random() * 0.04 + 0.03,
+        gold,
       });
     }
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw connection lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECT_DIST) {
+            const alpha = (1 - dist / CONNECT_DIST) * 0.05;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
@@ -54,9 +79,12 @@ export default function ParticleBackground() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(201,168,76,${p.opacity})`;
+        ctx.fillStyle = p.gold
+          ? `rgba(201,168,76,${p.opacity})`
+          : `rgba(255,255,255,${p.opacity})`;
         ctx.fill();
       });
+
       animId = requestAnimationFrame(draw);
     };
     draw();

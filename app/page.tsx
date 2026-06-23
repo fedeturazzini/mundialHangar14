@@ -73,16 +73,16 @@ export default function Home() {
     <div className="relative min-h-screen bg-black text-white">
       <ParticleBackground />
 
-      <div className="relative z-10 max-w-lg mx-auto pb-20">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-16 pb-20">
 
         {/* Header */}
-        <header className="px-4 pt-10 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase mb-1">
+        <header className="pt-10 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-[10px] text-white/30 tracking-[0.25em] uppercase mb-1.5">
                 3 de Julio · Hangar 14
               </p>
-              <h1 className="text-xl font-semibold tracking-tight">
+              <h1 className="text-2xl lg:text-4xl font-bold tracking-tight">
                 Mundial FIFA{' '}
                 <span style={{ color: '#C9A84C' }}>·</span>
                 {' '}Hangar 14
@@ -90,7 +90,7 @@ export default function Home() {
             </div>
             <button
               onClick={() => setShowAdmin(true)}
-              className="text-xs px-3 py-1.5 rounded transition-colors mt-1"
+              className="text-xs px-3 py-1.5 rounded transition-colors mt-1 flex-shrink-0"
               style={{
                 border: isAdmin ? '1px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)',
                 color: isAdmin ? '#C9A84C' : 'rgba(255,255,255,0.4)',
@@ -104,14 +104,14 @@ export default function Home() {
 
         {/* Tabs */}
         <nav
-          className="flex sticky top-0 z-40 bg-black px-2"
+          className="flex sticky top-0 z-40 bg-black"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
         >
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="relative flex-1 py-3 text-xs font-medium transition-colors"
+              className="relative flex-1 py-4 text-sm lg:text-base font-medium tracking-wide transition-colors"
               style={{ color: activeTab === tab.id ? '#C9A84C' : 'rgba(255,255,255,0.35)' }}
             >
               {tab.label}

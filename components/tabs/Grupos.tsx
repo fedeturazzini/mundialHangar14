@@ -9,66 +9,106 @@ interface Props {
 
 export default function Grupos({ matches }: Props) {
   return (
-    <div className="px-4 pt-6 pb-10">
+    <div className="pt-8 pb-10">
       {GROUPS.map((group, gi) => {
         const rows = computeStandings(gi, matches);
+        const qualifyCount = 2;
+
         return (
-          <div key={group.name} className="mb-8">
-            <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Grupo {group.name}</p>
+          <div key={group.name} className="mb-10">
+            {/* Group header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-0.5 h-6 rounded-full" style={{ background: '#C9A84C' }} />
+              <div>
+                <p className="text-sm font-bold tracking-[0.25em] uppercase text-white">
+                  Grupo {group.name}
+                </p>
+                <p className="text-xs text-white/30">{group.teams.length} equipos · 2 clasifican</p>
+              </div>
+            </div>
+
             <div className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-              {/* header */}
+              {/* Table header */}
               <div
-                className="grid grid-cols-12 px-3 py-2 text-xs font-medium text-white/30"
-                style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+                className="grid px-4 py-2.5 text-xs font-medium text-white/30 tracking-wider"
+                style={{
+                  gridTemplateColumns: 'auto auto 1fr repeat(5, auto)',
+                  gap: '0 1rem',
+                  borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(255,255,255,0.02)',
+                }}
               >
-                <div className="col-span-5">Equipo</div>
-                <div className="col-span-1 text-center">PJ</div>
-                <div className="col-span-1 text-center">G</div>
-                <div className="col-span-1 text-center">E</div>
-                <div className="col-span-1 text-center">P</div>
-                <div className="col-span-1 text-center">GD</div>
-                <div className="col-span-2 text-center">Pts</div>
+                <div className="w-5 text-center">#</div>
+                <div className="w-7" />
+                <div>Equipo</div>
+                <div className="text-center w-7">PJ</div>
+                <div className="text-center w-7">G</div>
+                <div className="text-center w-7">E</div>
+                <div className="text-center w-7">P</div>
+                <div className="text-center w-10">Pts</div>
               </div>
 
-              {rows.map((row, ri) => (
-                <motion.div
-                  key={row.team.id}
-                  className="grid grid-cols-12 px-3 py-3 items-center"
-                  style={{
-                    borderBottom: ri < rows.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                    background: ri < 2 ? 'rgba(201,168,76,0.03)' : 'transparent',
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: ri * 0.04 }}
-                >
-                  <div className="col-span-5 flex items-center gap-2">
+              {rows.map((row, ri) => {
+                const qualifies = ri < qualifyCount;
+                const isLast = ri === rows.length - 1;
+                const isDivider = ri === qualifyCount - 1 && qualifyCount < rows.length;
+
+                return (
+                  <motion.div key={row.team.id}>
                     <div
-                      className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ background: ri < 2 ? '#C9A84C' : 'rgba(255,255,255,0.2)' }}
-                    />
-                    <div>
-                      <div className="text-sm font-medium flex items-center gap-1.5">
-                        <span>{row.team.flag}</span>
-                        <span>{row.team.name}</span>
+                      className="grid px-4 items-center"
+                      style={{
+                        gridTemplateColumns: 'auto auto 1fr repeat(5, auto)',
+                        gap: '0 1rem',
+                        paddingTop: '0.875rem',
+                        paddingBottom: '0.875rem',
+                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                        background: qualifies ? 'rgba(201,168,76,0.04)' : 'transparent',
+                        borderLeft: ri === 0 ? '2px solid #C9A84C' : '2px solid transparent',
+                      }}
+                    >
+                      {/* Position */}
+                      <div
+                        className="w-5 text-center text-sm font-bold"
+                        style={{ color: qualifies ? '#C9A84C' : 'rgba(255,255,255,0.25)' }}
+                      >
+                        {ri + 1}
                       </div>
-                      <div className="text-xs text-white/30 mt-0.5">
-                        {row.team.players.map(p => p.split(' ')[0]).join(' · ')}
+
+                      {/* Flag */}
+                      <div className="text-xl w-7">{row.team.flag}</div>
+
+                      {/* Team name + players */}
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold truncate">{row.team.name}</div>
+                        <div className="text-xs text-white/30 mt-0.5 truncate">
+                          {row.team.players.map(p => p.split(' ')[0]).join(' · ')}
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="w-7 text-center text-sm text-white/50">{row.pj}</div>
+                      <div className="w-7 text-center text-sm text-white/50">{row.g}</div>
+                      <div className="w-7 text-center text-sm text-white/50">{row.e}</div>
+                      <div className="w-7 text-center text-sm text-white/50">{row.p}</div>
+                      <div
+                        className="w-10 text-center text-sm font-bold"
+                        style={{ color: qualifies ? '#C9A84C' : 'rgba(255,255,255,0.6)' }}
+                      >
+                        {row.pts}
                       </div>
                     </div>
-                  </div>
-                  <div className="col-span-1 text-center text-sm text-white/60">{row.pj}</div>
-                  <div className="col-span-1 text-center text-sm text-white/60">{row.g}</div>
-                  <div className="col-span-1 text-center text-sm text-white/60">{row.e}</div>
-                  <div className="col-span-1 text-center text-sm text-white/60">{row.p}</div>
-                  <div className="col-span-1 text-center text-sm text-white/60">
-                    {row.gd >= 0 ? '+' : ''}{row.gd}
-                  </div>
-                  <div className="col-span-2 text-center text-sm font-semibold" style={{ color: '#C9A84C' }}>
-                    {row.pts}
-                  </div>
-                </motion.div>
-              ))}
+
+                    {/* Dotted divider after last qualifier */}
+                    {isDivider && (
+                      <div
+                        className="mx-4"
+                        style={{ borderTop: '1px dashed rgba(255,255,255,0.08)' }}
+                      />
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         );
