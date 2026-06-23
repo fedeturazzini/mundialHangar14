@@ -11,8 +11,11 @@ function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabe
   const winner = getWinner(match);
   return (
     <div
-      className="rounded-lg overflow-hidden"
-      style={{ border: borderGold ? '1px solid rgba(201,168,76,0.35)' : '1px solid rgba(255,255,255,0.1)', background: '#0D0D0D' }}
+      className="overflow-hidden"
+      style={{
+        background: borderGold ? 'rgba(201,168,76,0.05)' : '#111',
+        borderRadius: '6px',
+      }}
     >
       {(['home', 'away'] as const).map((side, i) => {
         const label = i === 0 ? match.homeLabel : match.awayLabel;
@@ -23,7 +26,7 @@ function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabe
             key={side}
             className="flex items-center justify-between px-3 py-2.5 text-xs"
             style={{
-              borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+              borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
               color: isWinner ? '#C9A84C' : 'rgba(255,255,255,0.7)',
             }}
           >

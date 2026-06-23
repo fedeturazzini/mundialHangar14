@@ -27,15 +27,15 @@ export default function Grupos({ matches }: Props) {
               </div>
             </div>
 
-            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="overflow-hidden" style={{ background: '#111', borderRadius: '6px' }}>
               {/* Table header */}
               <div
                 className="grid px-4 py-2.5 text-xs font-medium text-white/30 tracking-wider"
                 style={{
                   gridTemplateColumns: 'auto auto 1fr repeat(5, auto)',
                   gap: '0 1rem',
-                  borderBottom: '1px solid rgba(255,255,255,0.06)',
-                  background: 'rgba(255,255,255,0.02)',
+                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  background: '#0F0F0F',
                 }}
               >
                 <div className="w-5 text-center">#</div>
@@ -62,7 +62,7 @@ export default function Grupos({ matches }: Props) {
                         gap: '0 1rem',
                         paddingTop: '0.875rem',
                         paddingBottom: '0.875rem',
-                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.03)',
                         background: qualifies ? 'rgba(201,168,76,0.04)' : 'transparent',
                         borderLeft: ri === 0 ? '2px solid #C9A84C' : '2px solid transparent',
                       }}

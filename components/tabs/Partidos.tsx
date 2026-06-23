@@ -95,18 +95,16 @@ function MatchRow({
     </>
   );
 
-  const baseStyle = {
-    background: isFinal ? 'rgba(201,168,76,0.04)' : '#0D0D0D',
-    border: isFinal ? '1px solid rgba(201,168,76,0.3)' : '1px solid rgba(255,255,255,0.07)',
-  };
+  const baseBg = isFinal ? 'rgba(201,168,76,0.05)' : '#111';
+  const hoverBg = isFinal ? 'rgba(201,168,76,0.09)' : '#161616';
 
   if (canEdit) {
     return (
       <button
-        className="w-full rounded-lg text-left transition-all active:scale-[0.99]"
-        style={{ ...baseStyle, cursor: 'pointer' }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = isFinal ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.07)')}
+        className="w-full text-left active:scale-[0.99]"
+        style={{ background: baseBg, borderRadius: '6px', cursor: 'pointer', transition: 'background 200ms ease' }}
+        onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
+        onMouseLeave={e => (e.currentTarget.style.background = baseBg)}
         onClick={() => onEditMatch(match)}
       >
         {inner}
@@ -114,7 +112,7 @@ function MatchRow({
     );
   }
 
-  return <div className="rounded-lg" style={baseStyle}>{inner}</div>;
+  return <div style={{ background: baseBg, borderRadius: '6px' }}>{inner}</div>;
 }
 
 function roundLabel(round: number, phase: string): string {

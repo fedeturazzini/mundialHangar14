@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Team, GROUPS, getInitials } from '@/lib/data';
 
 interface Props {
@@ -8,50 +9,27 @@ interface Props {
 }
 
 function TeamCard({ team, delay, onSelect }: { team: Team; delay: number; onSelect: (t: Team) => void }) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const spotlightBg = useMotionTemplate`radial-gradient(200px circle at ${mouseX}px ${mouseY}px, rgba(201,168,76,0.08), transparent)`;
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  };
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.button
       onClick={() => onSelect(team)}
-      onMouseMove={handleMouseMove}
-      className="relative text-left w-full rounded-2xl overflow-hidden group"
-      style={{ opacity: team.tentative ? 0.55 : 1 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative text-left w-full overflow-hidden"
+      style={{ opacity: team.tentative ? 0.55 : 1, borderRadius: '6px' }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: team.tentative ? 0.55 : 1, y: 0 }}
       transition={{ delay, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Gradient border glow on hover */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.35), transparent 60%)',
-          padding: '1px',
-        }}
-      />
-
-      {/* Spotlight */}
-      <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: spotlightBg }}
-      />
-
       {/* Card content */}
       <div
-        className="relative p-5 lg:p-6 rounded-2xl h-full flex flex-col"
+        className="relative p-5 lg:p-6 h-full flex flex-col"
         style={{
-          background: 'linear-gradient(145deg, #111111, #0c0c0c)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          transition: 'border-color 0.3s',
+          background: hovered ? '#161616' : '#111',
+          borderRadius: '6px',
+          transition: 'background 200ms ease',
         }}
       >
         {/* Flag */}
