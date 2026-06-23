@@ -62,7 +62,7 @@ function MatchRow({
           <div className="text-sm font-semibold">{homeDisplay}</div>
           {match.home && (
             <div className="text-xs text-white/30 mt-0.5 truncate">
-              {match.home.players.map(p => p.split(' ')[0]).join(' · ')}
+              {match.home.players.map(p => p.short).join(' · ')}
             </div>
           )}
         </div>
@@ -81,7 +81,7 @@ function MatchRow({
           <div className="text-sm font-semibold">{awayDisplay}</div>
           {match.away && (
             <div className="text-xs text-white/30 mt-0.5 truncate">
-              {match.away.players.map(p => p.split(' ')[0]).join(' · ')}
+              {match.away.players.map(p => p.short).join(' · ')}
             </div>
           )}
         </div>

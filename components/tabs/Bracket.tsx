@@ -95,7 +95,7 @@ export default function Bracket({ matches }: Props) {
             <Flag code={champion.code} className="w-20 h-14 rounded-[4px]" style={{ filter: 'drop-shadow(0 4px 16px rgba(201,168,76,0.3))' }} />
           </div>
           <div className="text-xl font-semibold" style={{ color: '#C9A84C' }}>{champion.name}</div>
-          <div className="text-sm text-white/40 mt-1">{champion.players.join(' · ')}</div>
+          <div className="text-sm text-white/40 mt-1">{champion.players.map(p => p.name).join(' · ')}</div>
         </motion.div>
       )}
     </div>

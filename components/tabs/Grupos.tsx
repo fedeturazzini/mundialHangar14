@@ -85,7 +85,7 @@ export default function Grupos({ matches }: Props) {
                       <div className="min-w-0">
                         <div className="text-sm font-semibold truncate">{row.team.name}</div>
                         <div className="text-xs text-white/30 mt-0.5 truncate">
-                          {row.team.players.map(p => p.split(' ')[0]).join(' · ')}
+                          {row.team.players.map(p => p.short).join(' · ')}
                         </div>
                       </div>
 

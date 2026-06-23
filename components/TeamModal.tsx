@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Team } from '@/lib/data';
+import { Team, getInitials } from '@/lib/data';
 import Flag from '@/components/Flag';
 
 interface Props {
@@ -58,26 +58,31 @@ export default function TeamModal({ team, onClose }: Props) {
             <div className="grid grid-cols-2 gap-4 flex-1">
               {team.players.map((player, pi) => (
                 <motion.div
-                  key={player}
+                  key={player.name}
                   className="flex flex-col items-center text-center p-5 rounded-xl"
                   style={{ background: '#131313', border: '1px solid rgba(255,255,255,0.08)' }}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: pi * 0.08 }}
                 >
-                  {/* Avatar via DiceBear */}
+                  {/* Foto del jugador */}
                   <div
                     className="w-20 h-20 rounded-full overflow-hidden mb-3 flex-shrink-0"
                     style={{ border: '2px solid rgba(201,168,76,0.3)' }}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(player)}&backgroundColor=1a1a1a&textColor=C9A84C&fontSize=38`}
-                      alt={player}
-                      className="w-full h-full object-cover"
-                    />
+                    {player.photo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={player.photo} alt={player.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center text-xl font-black"
+                        style={{ background: '#1a1a1a', color: '#C9A84C' }}
+                      >
+                        {getInitials(player)}
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm font-semibold leading-snug">{player}</p>
+                  <p className="text-sm font-semibold leading-snug">{player.name}</p>
                   <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
                     Jugador {pi + 1}
                   </p>

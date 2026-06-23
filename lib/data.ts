@@ -1,9 +1,15 @@
+export interface Player {
+  name: string;    // nombre completo
+  short: string;   // nombre corto para cards
+  photo?: string;  // ruta en /public (ej: /JugadoresFinal/ManuFerloni.png)
+}
+
 export interface Team {
   id: string;
   name: string;
   flag: string;   // emoji fallback
   code: string;   // ISO 3166-1 alpha-2 for SVG flags
-  players: [string, string];
+  players: [Player, Player];
   tentative?: boolean;
 }
 
@@ -55,18 +61,39 @@ export const GROUPS: Group[] = [
   {
     name: 'A',
     teams: [
-      { id: 'arg', name: 'Argentina', flag: '🇦🇷', code: 'AR', players: ['Fede Tura', 'Manu Ferloni'],    tentative: false },
-      { id: 'bra', name: 'Brasil',    flag: '🇧🇷', code: 'BR', players: ['Fede Ledebur', 'Trusso'],       tentative: false },
-      { id: 'fra', name: 'Francia',   flag: '🇫🇷', code: 'FR', players: ['Rober Curia', 'Santi Barcia'],  tentative: false },
-      { id: 'ned', name: 'Holanda',   flag: '🇳🇱', code: 'NL', players: ['Tomi Figueroa', 'Facu 10'],     tentative: true  },
+      { id: 'arg', name: 'Argentina', flag: '🇦🇷', code: 'AR', tentative: false, players: [
+        { name: 'Fede Turazzini', short: 'Tura' },
+        { name: 'Manu Ferloni',   short: 'Manu', photo: '/JugadoresFinal/ManuFerloni.png' },
+      ]},
+      { id: 'bra', name: 'Brasil', flag: '🇧🇷', code: 'BR', tentative: false, players: [
+        { name: 'Fede Ledebur', short: 'Ledebur' },
+        { name: 'Trusso',       short: 'Trusso' },
+      ]},
+      { id: 'fra', name: 'Francia', flag: '🇫🇷', code: 'FR', tentative: false, players: [
+        { name: 'Rober Curia',  short: 'Rober' },
+        { name: 'Santi Barcia', short: 'Santi' },
+      ]},
+      { id: 'ned', name: 'Holanda', flag: '🇳🇱', code: 'NL', tentative: true, players: [
+        { name: 'Tomi Figueroa', short: 'Tomi' },
+        { name: 'Facu 10',       short: 'Facu' },
+      ]},
     ],
   },
   {
     name: 'B',
     teams: [
-      { id: 'ger', name: 'Alemania', flag: '🇩🇪', code: 'DE', players: ['Lucho Scattini', 'Mate Segura'], tentative: false },
-      { id: 'esp', name: 'España',   flag: '🇪🇸', code: 'ES', players: ['Martín Bezic', 'Agus Figueroa'], tentative: false },
-      { id: 'por', name: 'Portugal', flag: '🇵🇹', code: 'PT', players: ['Fede Saquer', 'Rivero'],         tentative: false },
+      { id: 'ger', name: 'Alemania', flag: '🇩🇪', code: 'DE', tentative: false, players: [
+        { name: 'Lucho Scattini', short: 'Lucho', photo: '/JugadoresFinal/LucianoScattini.png' },
+        { name: 'Mate Segura',    short: 'Mate',  photo: '/JugadoresFinal/MateoSegura.png' },
+      ]},
+      { id: 'esp', name: 'España', flag: '🇪🇸', code: 'ES', tentative: false, players: [
+        { name: 'Martín Bezic',  short: 'Martín' },
+        { name: 'Agus Figueroa', short: 'Agus' },
+      ]},
+      { id: 'por', name: 'Portugal', flag: '🇵🇹', code: 'PT', tentative: false, players: [
+        { name: 'Fede Saquer', short: 'Saquer', photo: '/JugadoresFinal/FedeSaquer.png' },
+        { name: 'Rivero',      short: 'Rivero', photo: '/JugadoresFinal/PabloRivero.png' },
+      ]},
     ],
   },
 ];
@@ -155,7 +182,8 @@ export function resolveKnockout(matches: Match[]): Match[] {
   return next;
 }
 
-export function getInitials(name: string): string {
+export function getInitials(nameOrPlayer: string | Player): string {
+  const name = typeof nameOrPlayer === 'string' ? nameOrPlayer : nameOrPlayer.name;
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 

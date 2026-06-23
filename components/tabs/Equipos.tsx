@@ -50,18 +50,24 @@ function TeamCard({ team, delay, onSelect }: { team: Team; delay: number; onSele
         {/* Players */}
         <div className="flex flex-col gap-1.5 mt-auto">
           {team.players.map(player => (
-            <div key={player} className="flex items-center gap-2">
+            <div key={player.name} className="flex items-center gap-2">
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
-                style={{
-                  background: 'rgba(201,168,76,0.12)',
-                  border: '1px solid rgba(201,168,76,0.25)',
-                  color: '#C9A84C',
-                }}
+                className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0"
+                style={{ border: '1px solid rgba(201,168,76,0.25)' }}
               >
-                {getInitials(player)}
+                {player.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={player.photo} alt={player.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center text-[9px] font-bold"
+                    style={{ background: 'rgba(201,168,76,0.12)', color: '#C9A84C' }}
+                  >
+                    {getInitials(player)}
+                  </div>
+                )}
               </div>
-              <span className="text-xs text-white/50 font-medium">{player.split(' ')[0]}</span>
+              <span className="text-xs text-white/50 font-medium">{player.short}</span>
             </div>
           ))}
         </div>
