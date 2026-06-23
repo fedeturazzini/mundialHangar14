@@ -36,7 +36,11 @@ export default function Home() {
   const [showAdmin, setShowAdmin]       = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
-  // Load saved scores from localStorage
+  // Precio del evento
+  const [precio, setPrecio]               = useState<string>('A DEFINIR');
+  const [editandoPrecio, setEditandoPrecio] = useState(false);
+  const [precioDraft, setPrecioDraft]     = useState('');
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -51,6 +55,18 @@ export default function Home() {
       });
     } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('hangar14_precio');
+    if (saved) setPrecio(saved);
+  }, []);
+
+  const guardarPrecio = () => {
+    const val = precioDraft.trim() || 'A DEFINIR';
+    setPrecio(val);
+    localStorage.setItem('hangar14_precio', val);
+    setEditandoPrecio(false);
+  };
 
   const handleUpdateScore = (matchId: string, idx: 0 | 1, val: number) => {
     setMatches(prev => {
@@ -73,53 +89,117 @@ export default function Home() {
     <div className="relative min-h-screen bg-black text-white">
       <ParticleBackground />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-16 pb-20">
+      <div className="relative z-10 max-w-5xl mx-auto pb-20">
 
         {/* Header */}
-        <header className="pt-10 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <p className="text-[10px] text-white/30 tracking-[0.25em] uppercase mb-1.5">
+        <header
+          className="px-4 lg:px-8 pt-12 pb-6"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {/* Precio del evento */}
+          <div className="mb-3">
+            {editandoPrecio && isAdmin ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-white/30 tracking-[0.2em] uppercase">
+                  Precio del evento:
+                </span>
+                <input
+                  autoFocus
+                  type="text"
+                  value={precioDraft}
+                  onChange={e => setPrecioDraft(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') guardarPrecio();
+                    if (e.key === 'Escape') setEditandoPrecio(false);
+                  }}
+                  placeholder="ej: $5.000"
+                  className="bg-transparent text-xs font-semibold outline-none border-b pb-0.5"
+                  style={{ color: '#C9A84C', borderColor: 'rgba(201,168,76,0.4)', width: '120px' }}
+                  onBlur={guardarPrecio}
+                />
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  if (isAdmin) {
+                    setPrecioDraft(precio === 'A DEFINIR' ? '' : precio);
+                    setEditandoPrecio(true);
+                  }
+                }}
+                className="flex items-center gap-1.5 group"
+                style={{ cursor: isAdmin ? 'pointer' : 'default' }}
+              >
+                <span className="text-[10px] text-white/30 tracking-[0.2em] uppercase">
+                  Precio del evento:
+                </span>
+                <span
+                  className="text-[10px] font-semibold tracking-wide"
+                  style={{ color: precio === 'A DEFINIR' ? 'rgba(255,255,255,0.3)' : '#C9A84C' }}
+                >
+                  {precio}
+                </span>
+                {isAdmin && (
+                  <span className="text-[9px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity ml-1">
+                    ✎ editar
+                  </span>
+                )}
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <p className="text-[10px] text-white/25 tracking-[0.3em] uppercase mb-2 font-medium">
                 3 de Julio · Hangar 14
               </p>
-              <h1 className="text-2xl lg:text-4xl font-bold tracking-tight">
-                Mundial FIFA{' '}
-                <span style={{ color: '#C9A84C' }}>·</span>
-                {' '}Hangar 14
+              <h1 className="font-black tracking-tight leading-none" style={{ fontSize: 'clamp(1.8rem, 5vw, 3.5rem)' }}>
+                Mundial{' '}
+                <span style={{ color: '#C9A84C', textShadow: '0 0 30px rgba(201,168,76,0.3)' }}>
+                  FIFA
+                </span>
+                <br className="lg:hidden" />
+                <span className="text-white/20"> · </span>
+                Hangar 14
               </h1>
             </div>
             <button
               onClick={() => setShowAdmin(true)}
-              className="text-xs px-3 py-1.5 rounded transition-colors mt-1 flex-shrink-0"
+              className="text-xs px-4 py-2 rounded-lg transition-all mt-1 font-medium flex-shrink-0"
               style={{
-                border: isAdmin ? '1px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)',
-                color: isAdmin ? '#C9A84C' : 'rgba(255,255,255,0.4)',
+                border: isAdmin ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(255,255,255,0.1)',
+                color: isAdmin ? '#C9A84C' : 'rgba(255,255,255,0.35)',
+                background: isAdmin ? 'rgba(201,168,76,0.05)' : 'transparent',
               }}
             >
               {isAdmin ? '⚡ Admin' : 'Admin'}
             </button>
           </div>
+
           <Countdown />
         </header>
 
         {/* Tabs */}
         <nav
-          className="flex sticky top-0 z-40 bg-black"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+          className="flex sticky top-0 z-40 px-4 lg:px-8"
+          style={{
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(20px)',
+          }}
         >
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="relative flex-1 py-4 text-sm lg:text-base font-medium tracking-wide transition-colors"
-              style={{ color: activeTab === tab.id ? '#C9A84C' : 'rgba(255,255,255,0.35)' }}
+              className="relative flex-1 py-4 text-xs font-semibold transition-all tracking-widest uppercase"
+              style={{ color: activeTab === tab.id ? '#C9A84C' : 'rgba(255,255,255,0.25)' }}
             >
               {tab.label}
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-px"
-                  style={{ background: '#C9A84C' }}
+                  className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full"
+                  style={{ background: 'linear-gradient(to right, transparent, #C9A84C, transparent)' }}
                   transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                 />
               )}
