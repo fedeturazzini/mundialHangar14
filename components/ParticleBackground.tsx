@@ -52,7 +52,7 @@ export default function ParticleBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    const psParticles: PSParticle[] = Array.from({ length: 30 }, (_, i) => {
+    const psParticles: PSParticle[] = Array.from({ length: 90 }, (_, i) => {
       const sym = PS_SYMBOLS[i % 4];
       return {
         x: Math.random() * window.innerWidth,
