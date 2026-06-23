@@ -137,63 +137,73 @@ export default function Home() {
           className="px-4 lg:px-8 pt-12 pb-6"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
-          {/* Precio del evento */}
-          <div className="mb-4">
-            {editandoPrecio && isAdmin ? (
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
-                  Precio del evento:
-                </span>
-                <input
-                  autoFocus
-                  type="text"
-                  value={precioDraft}
-                  onChange={e => setPrecioDraft(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') guardarPrecio();
-                    if (e.key === 'Escape') setEditandoPrecio(false);
-                  }}
-                  placeholder="ej: $5.000"
-                  className="bg-transparent text-lg font-black outline-none border-b pb-0.5"
-                  style={{ color: '#C9A84C', borderColor: 'rgba(201,168,76,0.5)', width: '150px' }}
-                  onBlur={guardarPrecio}
-                />
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  if (isAdmin) {
-                    setPrecioDraft(precio === 'A DEFINIR' ? '' : precio);
-                    setEditandoPrecio(true);
-                  }
-                }}
-                className="flex items-center gap-2 group"
-                style={{ cursor: isAdmin ? 'pointer' : 'default' }}
-              >
-                <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
-                  Precio del evento:
-                </span>
-                <span
-                  className="text-lg font-black tracking-tight"
-                  style={{
-                    color: precio === 'A DEFINIR' ? 'rgba(255,255,255,0.25)' : '#C9A84C',
-                    textShadow: precio !== 'A DEFINIR' ? '0 0 20px rgba(201,168,76,0.3)' : 'none',
-                  }}
-                >
-                  {precio}
-                </span>
-                {isAdmin && (
-                  <span className="text-[10px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                    ✎
+          {/* Precio + Organizadores — box con acento dorado */}
+          <div
+            className="flex items-center justify-between mb-6 px-3 py-2.5"
+            style={{
+              background: 'rgba(201,168,76,0.05)',
+              borderRadius: '6px',
+              borderLeft: '2px solid #C9A84C',
+            }}
+          >
+            {/* Precio del evento */}
+            <div>
+              {editandoPrecio && isAdmin ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-white/40 tracking-[0.15em] uppercase font-medium">
+                    Precio:
                   </span>
-                )}
-              </button>
-            )}
-          </div>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={precioDraft}
+                    onChange={e => setPrecioDraft(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') guardarPrecio();
+                      if (e.key === 'Escape') setEditandoPrecio(false);
+                    }}
+                    placeholder="ej: $5.000"
+                    className="bg-transparent text-sm font-black outline-none border-b pb-0.5"
+                    style={{ color: '#C9A84C', borderColor: 'rgba(201,168,76,0.5)', width: '120px' }}
+                    onBlur={guardarPrecio}
+                  />
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (isAdmin) {
+                      setPrecioDraft(precio === 'A DEFINIR' ? '' : precio);
+                      setEditandoPrecio(true);
+                    }
+                  }}
+                  className="flex items-center gap-2 group"
+                  style={{ cursor: isAdmin ? 'pointer' : 'default' }}
+                >
+                  <span className="text-[10px] text-white/40 tracking-[0.15em] uppercase font-medium">
+                    Precio del evento:
+                  </span>
+                  <span
+                    className="text-sm font-black tracking-tight"
+                    style={{
+                      color: precio === 'A DEFINIR' ? 'rgba(255,255,255,0.3)' : '#C9A84C',
+                      textShadow: precio !== 'A DEFINIR' ? '0 0 16px rgba(201,168,76,0.35)' : 'none',
+                    }}
+                  >
+                    {precio}
+                  </span>
+                  {isAdmin && (
+                    <span className="text-[9px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">✎</span>
+                  )}
+                </button>
+              )}
+            </div>
 
-          <p className="text-[10px] text-white/20 tracking-wide mb-4">
-            Organizadores: Federico Ledebur &amp; Federico Turazzini
-          </p>
+            {/* Organizadores */}
+            <p className="text-[10px] text-white/30 tracking-wide">
+              <span style={{ color: 'rgba(201,168,76,0.6)' }}>Org.</span>{' '}
+              Fede Ledebur &amp; Fede Turazzini
+            </p>
+          </div>
 
           <div className="flex items-start justify-between mb-8">
             <div>
