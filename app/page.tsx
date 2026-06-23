@@ -17,8 +17,8 @@ import {
   Match,
   buildInitialMatches,
   resolveKnockout,
-  STORAGE_KEY,
 } from '@/lib/data';
+import { supabase, DbResult } from '@/lib/supabase';
 
 const TABS = [
   { id: 'equipos',  label: 'Equipos'  },
@@ -29,6 +29,15 @@ const TABS = [
 
 type TabId = typeof TABS[number]['id'];
 
+function applyResults(base: Match[], rows: DbResult[]): Match[] {
+  const next = base.map(m => {
+    const row = rows.find(r => r.match_id === m.id);
+    if (!row || !row.played) return { ...m, score: null };
+    return { ...m, score: [row.home_score, row.away_score] as [number, number] };
+  });
+  return resolveKnockout(next);
+}
+
 export default function Home() {
   const [activeTab, setActiveTab]       = useState<TabId>('equipos');
   const [matches, setMatches]           = useState<Match[]>(() => buildInitialMatches());
@@ -36,25 +45,10 @@ export default function Home() {
   const [showAdmin, setShowAdmin]       = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
-  // Precio del evento
-  const [precio, setPrecio]               = useState<string>('A DEFINIR');
+  // Precio del evento (localStorage — no necesita realtime)
+  const [precio, setPrecio]                 = useState<string>('A DEFINIR');
   const [editandoPrecio, setEditandoPrecio] = useState(false);
-  const [precioDraft, setPrecioDraft]     = useState('');
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const saved: { id: string; score: [number, number] | null }[] = JSON.parse(raw);
-      setMatches(prev => {
-        const next = prev.map(m => {
-          const found = saved.find(s => s.id === m.id);
-          return found ? { ...m, score: found.score } : m;
-        });
-        return resolveKnockout(next);
-      });
-    } catch { /* ignore */ }
-  }, []);
+  const [precioDraft, setPrecioDraft]       = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('hangar14_precio');
@@ -68,18 +62,67 @@ export default function Home() {
     setEditandoPrecio(false);
   };
 
+  // ── Supabase: carga inicial + suscripción realtime ──────────────────────
+  useEffect(() => {
+    const base = buildInitialMatches();
+
+    // 1. Carga inicial
+    supabase
+      .from('results')
+      .select('*')
+      .then(({ data, error }) => {
+        if (error) { console.error('Supabase load error:', error); return; }
+        if (data) setMatches(applyResults(base, data as DbResult[]));
+      });
+
+    // 2. Realtime — cualquier cambio en la tabla `results`
+    const channel = supabase
+      .channel('results-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'results' },
+        (payload) => {
+          const row = payload.new as DbResult;
+          setMatches(prev => {
+            const next = prev.map(m => {
+              if (m.id !== row.match_id) return m;
+              const score: [number, number] | null =
+                row.played ? [row.home_score, row.away_score] : null;
+              return { ...m, score };
+            });
+            return resolveKnockout(next);
+          });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  // ── Guardar resultado en Supabase ────────────────────────────────────────
   const handleUpdateScore = (matchId: string, idx: 0 | 1, val: number) => {
     setMatches(prev => {
       const next = prev.map(m => {
         if (m.id !== matchId) return m;
-        const score: [number, number] = m.score ? [...m.score] as [number, number] : [0, 0];
+        const score: [number, number] = m.score
+          ? ([...m.score] as [number, number])
+          : [0, 0];
         score[idx] = val;
+
+        // Persist to Supabase (fire & forget — realtime actualiza todos los clientes)
+        supabase.from('results').upsert({
+          match_id: matchId,
+          home_score: score[0],
+          away_score: score[1],
+          played: true,
+          updated_at: new Date().toISOString(),
+        }).then(({ error }) => {
+          if (error) console.error('Supabase upsert error:', error);
+        });
+
         return { ...m, score };
       });
-      const resolved = resolveKnockout(next);
-      const toSave = resolved.map(m => ({ id: m.id, score: m.score }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-      return resolved;
+      return resolveKnockout(next);
     });
   };
 
@@ -219,12 +262,8 @@ export default function Home() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
           >
-            {activeTab === 'equipos' && (
-              <Equipos onSelect={setSelectedTeam} />
-            )}
-            {activeTab === 'grupos' && (
-              <Grupos matches={resolvedMatches} />
-            )}
+            {activeTab === 'equipos'  && <Equipos onSelect={setSelectedTeam} />}
+            {activeTab === 'grupos'   && <Grupos matches={resolvedMatches} />}
             {activeTab === 'partidos' && (
               <Partidos
                 matches={resolvedMatches}
@@ -232,9 +271,7 @@ export default function Home() {
                 onUpdateScore={handleUpdateScore}
               />
             )}
-            {activeTab === 'bracket' && (
-              <Bracket matches={resolvedMatches} />
-            )}
+            {activeTab === 'bracket'  && <Bracket matches={resolvedMatches} />}
           </motion.div>
         </AnimatePresence>
       </div>
