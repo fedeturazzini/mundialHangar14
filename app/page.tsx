@@ -139,7 +139,7 @@ export default function Home() {
         >
           {/* Precio + Organizadores — box con acento dorado */}
           <div
-            className="flex items-center justify-between mb-6 px-3 py-2.5"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-6 px-3 py-2.5"
             style={{
               background: 'rgba(201,168,76,0.05)',
               borderRadius: '6px',
@@ -179,7 +179,7 @@ export default function Home() {
                   className="flex items-center gap-2 group"
                   style={{ cursor: isAdmin ? 'pointer' : 'default' }}
                 >
-                  <span className="text-[10px] text-white/40 tracking-[0.15em] uppercase font-medium">
+                  <span className="text-[10px] text-white/40 tracking-[0.15em] uppercase font-medium whitespace-nowrap">
                     Precio del evento:
                   </span>
                   <span
