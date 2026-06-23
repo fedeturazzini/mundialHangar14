@@ -97,11 +97,11 @@ export default function Home() {
           style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
           {/* Precio del evento */}
-          <div className="mb-3">
+          <div className="mb-4">
             {editandoPrecio && isAdmin ? (
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-white/30 tracking-[0.2em] uppercase">
-                  Precio del evento:
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
+                  Precio:
                 </span>
                 <input
                   autoFocus
@@ -113,8 +113,8 @@ export default function Home() {
                     if (e.key === 'Escape') setEditandoPrecio(false);
                   }}
                   placeholder="ej: $5.000"
-                  className="bg-transparent text-xs font-semibold outline-none border-b pb-0.5"
-                  style={{ color: '#C9A84C', borderColor: 'rgba(201,168,76,0.4)', width: '120px' }}
+                  className="bg-transparent text-lg font-black outline-none border-b pb-0.5"
+                  style={{ color: '#C9A84C', borderColor: 'rgba(201,168,76,0.5)', width: '150px' }}
                   onBlur={guardarPrecio}
                 />
               </div>
@@ -126,21 +126,24 @@ export default function Home() {
                     setEditandoPrecio(true);
                   }
                 }}
-                className="flex items-center gap-1.5 group"
+                className="flex items-center gap-2 group"
                 style={{ cursor: isAdmin ? 'pointer' : 'default' }}
               >
-                <span className="text-[10px] text-white/30 tracking-[0.2em] uppercase">
-                  Precio del evento:
+                <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
+                  Precio:
                 </span>
                 <span
-                  className="text-[10px] font-semibold tracking-wide"
-                  style={{ color: precio === 'A DEFINIR' ? 'rgba(255,255,255,0.3)' : '#C9A84C' }}
+                  className="text-lg font-black tracking-tight"
+                  style={{
+                    color: precio === 'A DEFINIR' ? 'rgba(255,255,255,0.25)' : '#C9A84C',
+                    textShadow: precio !== 'A DEFINIR' ? '0 0 20px rgba(201,168,76,0.3)' : 'none',
+                  }}
                 >
                   {precio}
                 </span>
                 {isAdmin && (
-                  <span className="text-[9px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity ml-1">
-                    ✎ editar
+                  <span className="text-[10px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                    ✎
                   </span>
                 )}
               </button>
