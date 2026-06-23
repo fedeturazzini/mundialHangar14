@@ -19,6 +19,7 @@ import {
   resolveKnockout,
 } from '@/lib/data';
 import { supabase, DbResult } from '@/lib/supabase';
+import ScoreModal from '@/components/ScoreModal';
 
 const TABS = [
   { id: 'equipos',  label: 'Equipos'  },
@@ -43,7 +44,8 @@ export default function Home() {
   const [matches, setMatches]           = useState<Match[]>(() => buildInitialMatches());
   const [isAdmin, setIsAdmin]           = useState(false);
   const [showAdmin, setShowAdmin]       = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [selectedTeam, setSelectedTeam]   = useState<Team | null>(null);
+  const [editingMatch, setEditingMatch]   = useState<Match | null>(null);
 
   // Precio del evento (localStorage — no necesita realtime)
   const [precio, setPrecio]                 = useState<string>('A DEFINIR');
@@ -100,30 +102,26 @@ export default function Home() {
   }, []);
 
   // ── Guardar resultado en Supabase ────────────────────────────────────────
-  const handleUpdateScore = (matchId: string, idx: 0 | 1, val: number) => {
-    setMatches(prev => {
-      const next = prev.map(m => {
-        if (m.id !== matchId) return m;
-        const score: [number, number] = m.score
-          ? ([...m.score] as [number, number])
-          : [0, 0];
-        score[idx] = val;
+  const handleSaveScore = (matchId: string, score: [number, number]) => {
+    setMatches(prev => resolveKnockout(prev.map(m => m.id === matchId ? { ...m, score } : m)));
+    supabase.from('results').upsert({
+      match_id: matchId,
+      home_score: score[0],
+      away_score: score[1],
+      played: true,
+      updated_at: new Date().toISOString(),
+    }).then(({ error }) => { if (error) console.error('upsert error:', error); });
+  };
 
-        // Persist to Supabase (fire & forget — realtime actualiza todos los clientes)
-        supabase.from('results').upsert({
-          match_id: matchId,
-          home_score: score[0],
-          away_score: score[1],
-          played: true,
-          updated_at: new Date().toISOString(),
-        }).then(({ error }) => {
-          if (error) console.error('Supabase upsert error:', error);
-        });
-
-        return { ...m, score };
-      });
-      return resolveKnockout(next);
-    });
+  const handleClearScore = (matchId: string) => {
+    setMatches(prev => resolveKnockout(prev.map(m => m.id === matchId ? { ...m, score: null } : m)));
+    supabase.from('results').upsert({
+      match_id: matchId,
+      home_score: 0,
+      away_score: 0,
+      played: false,
+      updated_at: new Date().toISOString(),
+    }).then(({ error }) => { if (error) console.error('clear error:', error); });
   };
 
   const resolvedMatches = useMemo(() => resolveKnockout(matches), [matches]);
@@ -268,7 +266,7 @@ export default function Home() {
               <Partidos
                 matches={resolvedMatches}
                 isAdmin={isAdmin}
-                onUpdateScore={handleUpdateScore}
+                onEditMatch={setEditingMatch}
               />
             )}
             {activeTab === 'bracket'  && <Bracket matches={resolvedMatches} />}
@@ -277,6 +275,12 @@ export default function Home() {
       </div>
 
       {/* Modals */}
+      <ScoreModal
+        match={editingMatch}
+        onClose={() => setEditingMatch(null)}
+        onSave={handleSaveScore}
+        onClear={handleClearScore}
+      />
       <TeamModal team={selectedTeam} onClose={() => setSelectedTeam(null)} />
       <AdminModal
         open={showAdmin}
