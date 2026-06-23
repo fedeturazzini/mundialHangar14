@@ -191,6 +191,10 @@ export default function Home() {
             )}
           </div>
 
+          <p className="text-[10px] text-white/20 tracking-wide mb-4">
+            Organizadores: Federico Ledebur &amp; Federico Turazzini
+          </p>
+
           <div className="flex items-start justify-between mb-8">
             <div>
               <p className="text-[10px] text-white/25 tracking-[0.3em] uppercase mb-2 font-medium">
