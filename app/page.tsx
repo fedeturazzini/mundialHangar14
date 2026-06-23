@@ -101,7 +101,7 @@ export default function Home() {
             {editandoPrecio && isAdmin ? (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
-                  Precio:
+                  Precio del evento:
                 </span>
                 <input
                   autoFocus
@@ -130,7 +130,7 @@ export default function Home() {
                 style={{ cursor: isAdmin ? 'pointer' : 'default' }}
               >
                 <span className="text-xs text-white/40 tracking-[0.2em] uppercase font-medium">
-                  Precio:
+                  Precio del evento:
                 </span>
                 <span
                   className="text-lg font-black tracking-tight"
