@@ -1,7 +1,8 @@
 export interface Team {
   id: string;
   name: string;
-  flag: string;
+  flag: string;   // emoji fallback
+  code: string;   // ISO 3166-1 alpha-2 for SVG flags
   players: [string, string];
   tentative?: boolean;
 }
@@ -54,18 +55,18 @@ export const GROUPS: Group[] = [
   {
     name: 'A',
     teams: [
-      { id: 'arg', name: 'Argentina', flag: '🇦🇷', players: ['Fede Tura', 'Manu Ferloni'],    tentative: false },
-      { id: 'bra', name: 'Brasil',    flag: '🇧🇷', players: ['Fede Ledebur', 'Trusso'],       tentative: false },
-      { id: 'fra', name: 'Francia',   flag: '🇫🇷', players: ['Rober Curia', 'Santi Barcia'],  tentative: false },
-      { id: 'ned', name: 'Holanda',   flag: '🇳🇱', players: ['Tomi Figueroa', 'Facu 10'],     tentative: true  },
+      { id: 'arg', name: 'Argentina', flag: '🇦🇷', code: 'AR', players: ['Fede Tura', 'Manu Ferloni'],    tentative: false },
+      { id: 'bra', name: 'Brasil',    flag: '🇧🇷', code: 'BR', players: ['Fede Ledebur', 'Trusso'],       tentative: false },
+      { id: 'fra', name: 'Francia',   flag: '🇫🇷', code: 'FR', players: ['Rober Curia', 'Santi Barcia'],  tentative: false },
+      { id: 'ned', name: 'Holanda',   flag: '🇳🇱', code: 'NL', players: ['Tomi Figueroa', 'Facu 10'],     tentative: true  },
     ],
   },
   {
     name: 'B',
     teams: [
-      { id: 'ger', name: 'Alemania', flag: '🇩🇪', players: ['Lucho Scattini', 'Mate Segura'], tentative: false },
-      { id: 'esp', name: 'España',   flag: '🇪🇸', players: ['Martín Bezic', 'Agus Figueroa'], tentative: false },
-      { id: 'por', name: 'Portugal', flag: '🇵🇹', players: ['Fede Saquer', 'Rivero'],         tentative: false },
+      { id: 'ger', name: 'Alemania', flag: '🇩🇪', code: 'DE', players: ['Lucho Scattini', 'Mate Segura'], tentative: false },
+      { id: 'esp', name: 'España',   flag: '🇪🇸', code: 'ES', players: ['Martín Bezic', 'Agus Figueroa'], tentative: false },
+      { id: 'por', name: 'Portugal', flag: '🇵🇹', code: 'PT', players: ['Fede Saquer', 'Rivero'],         tentative: false },
     ],
   },
 ];

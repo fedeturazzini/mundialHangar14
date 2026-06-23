@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Team, GROUPS, getInitials } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   onSelect: (team: Team) => void;
@@ -33,11 +34,12 @@ function TeamCard({ team, delay, onSelect }: { team: Team; delay: number; onSele
         }}
       >
         {/* Flag */}
-        <div
-          className="text-6xl lg:text-7xl mb-4 leading-none select-none"
-          style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
-        >
-          {team.flag}
+        <div className="mb-4">
+          <Flag
+            code={team.code}
+            className="w-16 h-11 lg:w-20 lg:h-14 rounded-[3px]"
+            style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
+          />
         </div>
 
         {/* Country name */}

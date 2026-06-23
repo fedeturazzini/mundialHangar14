@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Match } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   matches: Match[];
@@ -22,8 +23,12 @@ function MatchRow({
   const hasTeams = !!(match.home && match.away);
   const canEdit  = isAdmin && hasTeams;
 
-  const homeName = match.home ? `${match.home.flag} ${match.home.name}` : (match.seedHome ?? '—');
-  const awayName = match.away ? `${match.away.flag} ${match.away.name}` : (match.seedAway ?? '—');
+  const homeDisplay = match.home
+    ? <span className="flex items-center gap-1.5"><Flag code={match.home.code} className="w-5 h-3.5 rounded-[2px] flex-shrink-0" />{match.home.name}</span>
+    : <span>{match.seedHome ?? '—'}</span>;
+  const awayDisplay = match.away
+    ? <span className="flex items-center justify-end gap-1.5">{match.away.name}<Flag code={match.away.code} className="w-5 h-3.5 rounded-[2px] flex-shrink-0" /></span>
+    : <span>{match.seedAway ?? '—'}</span>;
 
   const inner = (
     <>
@@ -54,7 +59,7 @@ function MatchRow({
       {/* Teams + score */}
       <div className="flex items-center gap-2 px-3 py-3">
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate">{homeName}</div>
+          <div className="text-sm font-semibold">{homeDisplay}</div>
           {match.home && (
             <div className="text-xs text-white/30 mt-0.5 truncate">
               {match.home.players.map(p => p.split(' ')[0]).join(' · ')}
@@ -73,7 +78,7 @@ function MatchRow({
         </div>
 
         <div className="flex-1 min-w-0 text-right">
-          <div className="text-sm font-semibold truncate">{awayName}</div>
+          <div className="text-sm font-semibold">{awayDisplay}</div>
           {match.away && (
             <div className="text-xs text-white/30 mt-0.5 truncate">
               {match.away.players.map(p => p.split(' ')[0]).join(' · ')}

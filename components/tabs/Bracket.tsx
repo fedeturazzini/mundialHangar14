@@ -1,13 +1,24 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Match, getWinner } from '@/lib/data';
+import { Match, getWinner, Team } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   matches: Match[];
 }
 
-function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabel: string; awayLabel: string }; borderGold?: boolean }) {
+function teamLabel(team: Team | null, seed?: string): React.ReactNode {
+  if (!team) return <span className="text-white/30">{seed ?? '—'}</span>;
+  return (
+    <span className="flex items-center gap-1.5">
+      <Flag code={team.code} className="w-5 h-3.5 rounded-[2px] flex-shrink-0" />
+      {team.name}
+    </span>
+  );
+}
+
+function BracketMatch({ match, borderGold = false }: { match: Match; borderGold?: boolean }) {
   const winner = getWinner(match);
   return (
     <div
@@ -18,9 +29,10 @@ function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabe
       }}
     >
       {(['home', 'away'] as const).map((side, i) => {
-        const label = i === 0 ? match.homeLabel : match.awayLabel;
+        const team = i === 0 ? match.home : match.away;
+        const seed = i === 0 ? match.seedHome : match.seedAway;
         const score = match.score ? match.score[i] : null;
-        const isWinner = winner && (i === 0 ? winner === match.home : winner === match.away);
+        const isWinner = winner && team && winner.id === team.id;
         return (
           <div
             key={side}
@@ -30,7 +42,7 @@ function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabe
               color: isWinner ? '#C9A84C' : 'rgba(255,255,255,0.7)',
             }}
           >
-            <span className="truncate pr-2">{label}</span>
+            <span className="truncate pr-2">{teamLabel(team, seed)}</span>
             <span className="font-semibold tabular-nums flex-shrink-0">{score ?? '–'}</span>
           </div>
         );
@@ -40,21 +52,8 @@ function BracketMatch({ match, borderGold = false }: { match: Match & { homeLabe
 }
 
 export default function Bracket({ matches }: Props) {
-  const semis = matches
-    .filter(m => m.phase === 'semi')
-    .map(m => ({
-      ...m,
-      homeLabel: m.home ? `${m.home.flag} ${m.home.name}` : (m.seedHome ?? '—'),
-      awayLabel: m.away ? `${m.away.flag} ${m.away.name}` : (m.seedAway ?? '—'),
-    }));
-
-  const finals = matches
-    .filter(m => m.phase === 'final')
-    .map(m => ({
-      ...m,
-      homeLabel: m.home ? `${m.home.flag} ${m.home.name}` : 'Ganador SF1',
-      awayLabel: m.away ? `${m.away.flag} ${m.away.name}` : 'Ganador SF2',
-    }));
+  const semis  = matches.filter(m => m.phase === 'semi');
+  const finals = matches.filter(m => m.phase === 'final');
 
   const champion = (() => {
     const fin = matches.find(m => m.phase === 'final');
@@ -92,7 +91,9 @@ export default function Bracket({ matches }: Props) {
           transition={{ delay: 0.2, type: 'spring' }}
         >
           <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Campeón</p>
-          <div className="text-5xl mb-2">{champion.flag}</div>
+          <div className="flex justify-center mb-3">
+            <Flag code={champion.code} className="w-20 h-14 rounded-[4px]" style={{ filter: 'drop-shadow(0 4px 16px rgba(201,168,76,0.3))' }} />
+          </div>
           <div className="text-xl font-semibold" style={{ color: '#C9A84C' }}>{champion.name}</div>
           <div className="text-sm text-white/40 mt-1">{champion.players.join(' · ')}</div>
         </motion.div>

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Team } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   team: Team | null;
@@ -41,7 +42,7 @@ export default function TeamModal({ team, onClose }: Props) {
 
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
-              <span className="text-5xl">{team.flag}</span>
+              <Flag code={team.code} className="w-20 h-14 rounded-[4px]" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.6))' }} />
               <div>
                 <h2 className="text-2xl font-bold">{team.name}</h2>
                 <p

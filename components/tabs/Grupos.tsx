@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { GROUPS, Match, computeStandings } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   matches: Match[];
@@ -76,7 +77,9 @@ export default function Grupos({ matches }: Props) {
                       </div>
 
                       {/* Flag */}
-                      <div className="text-xl w-7">{row.team.flag}</div>
+                      <div className="w-7">
+                        <Flag code={row.team.code} className="w-7 h-5 rounded-[2px]" />
+                      </div>
 
                       {/* Team name + players */}
                       <div className="min-w-0">

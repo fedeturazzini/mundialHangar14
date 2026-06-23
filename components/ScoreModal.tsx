@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Match } from '@/lib/data';
+import Flag from '@/components/Flag';
 
 interface Props {
   match: Match | null;
@@ -15,8 +16,12 @@ function ModalInner({ match, onClose, onSave, onClear }: Required<Props> & { mat
   const [home, setHome] = useState<number>(match.score?.[0] ?? 0);
   const [away, setAway] = useState<number>(match.score?.[1] ?? 0);
 
-  const homeName  = match.home ? `${match.home.flag} ${match.home.name}` : (match.seedHome ?? '—');
-  const awayName  = match.away ? `${match.away.flag} ${match.away.name}` : (match.seedAway ?? '—');
+  const homeNode = match.home
+    ? <><Flag code={match.home.code} className="w-8 h-5 rounded-[2px] mx-auto mb-1" />{match.home.name}</>
+    : <>{match.seedHome ?? '—'}</>;
+  const awayNode = match.away
+    ? <><Flag code={match.away.code} className="w-8 h-5 rounded-[2px] mx-auto mb-1" />{match.away.name}</>
+    : <>{match.seedAway ?? '—'}</>;
   const hasTeams  = !!(match.home && match.away);
   const hasScore  = !!match.score;
 
@@ -51,7 +56,7 @@ function ModalInner({ match, onClose, onSave, onClear }: Required<Props> & { mat
         <div className="flex items-center justify-between gap-3 mb-6">
           {/* Home */}
           <div className="flex-1 text-center">
-            <p className="text-sm font-semibold mb-3 leading-tight">{homeName}</p>
+            <p className="text-sm font-semibold mb-3 leading-tight flex flex-col items-center">{homeNode}</p>
             <input
               type="number"
               min={0}
@@ -75,7 +80,7 @@ function ModalInner({ match, onClose, onSave, onClear }: Required<Props> & { mat
 
           {/* Away */}
           <div className="flex-1 text-center">
-            <p className="text-sm font-semibold mb-3 leading-tight">{awayName}</p>
+            <p className="text-sm font-semibold mb-3 leading-tight flex flex-col items-center">{awayNode}</p>
             <input
               type="number"
               min={0}
