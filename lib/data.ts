@@ -62,20 +62,20 @@ export const GROUPS: Group[] = [
     name: 'A',
     teams: [
       { id: 'arg', name: 'Argentina', flag: '🇦🇷', code: 'AR', tentative: false, players: [
-        { name: 'Fede Turazzini', short: 'Tura' },
-        { name: 'Manu Ferloni',   short: 'Manu', photo: '/JugadoresFinal/ManuFerloni.png' },
+        { name: 'Fede Turazzini', short: 'Tura',    photo: '/JugadoresFinal/FedericoTurazzini.png' },
+        { name: 'Manu Ferloni',   short: 'Manu',    photo: '/JugadoresFinal/ManuFerloni.png' },
       ]},
       { id: 'bra', name: 'Brasil', flag: '🇧🇷', code: 'BR', tentative: false, players: [
-        { name: 'Fede Ledebur', short: 'Ledebur' },
-        { name: 'Trusso',       short: 'Trusso' },
+        { name: 'Fede Ledebur', short: 'Ledebur', photo: '/JugadoresFinal/FedeLedebur.png' },
+        { name: 'Trusso',       short: 'Trusso',  photo: '/JugadoresFinal/FranTrusso.png' },
       ]},
       { id: 'fra', name: 'Francia', flag: '🇫🇷', code: 'FR', tentative: false, players: [
-        { name: 'Rober Curia',  short: 'Rober' },
-        { name: 'Santi Barcia', short: 'Santi' },
+        { name: 'Rober Curia',  short: 'Rober', photo: '/JugadoresFinal/RoberCuria.png' },
+        { name: 'Santi Barcia', short: 'Santi', photo: '/JugadoresFinal/SantiagoBarcia.png' },
       ]},
       { id: 'ned', name: 'Holanda', flag: '🇳🇱', code: 'NL', tentative: true, players: [
-        { name: 'Tomi Figueroa', short: 'Tomi' },
-        { name: 'Facu 10',       short: 'Facu' },
+        { name: 'Tomi Figueroa', short: 'Tomi', photo: '/JugadoresFinal/TomasFigueroa.png' },
+        { name: 'Facu Diez',     short: 'Facu', photo: '/JugadoresFinal/FacundoDiez.png' },
       ]},
     ],
   },
@@ -87,8 +87,8 @@ export const GROUPS: Group[] = [
         { name: 'Mate Segura',    short: 'Mate',  photo: '/JugadoresFinal/MateoSegura.png' },
       ]},
       { id: 'esp', name: 'España', flag: '🇪🇸', code: 'ES', tentative: false, players: [
-        { name: 'Martín Bezic',  short: 'Martín' },
-        { name: 'Agus Figueroa', short: 'Agus' },
+        { name: 'Martín Bezic',  short: 'Martín', photo: '/JugadoresFinal/MartinBezic.png' },
+        { name: 'Agus Figueroa', short: 'Agus',   photo: '/JugadoresFinal/AgusFigueroa.png' },
       ]},
       { id: 'por', name: 'Portugal', flag: '🇵🇹', code: 'PT', tentative: false, players: [
         { name: 'Fede Saquer', short: 'Saquer', photo: '/JugadoresFinal/FedeSaquer.png' },
