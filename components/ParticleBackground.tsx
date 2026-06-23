@@ -2,19 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  opacity: number;
-  gold: boolean;
-}
-
-const COUNT = 90;
-const CONNECT_DIST = 140;
-
 export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -25,7 +12,17 @@ export default function ParticleBackground() {
     if (!ctx) return;
 
     let animId: number;
-    const particles: Particle[] = [];
+    const COUNT = 70;
+
+    const particles = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: (Math.random() - 0.5) * 0.18,
+      radius: Math.random() * 1.8 + 0.6,
+      opacity: Math.random() * 0.25 + 0.12,
+      gold: Math.random() > 0.45,
+    }));
 
     const resize = () => {
       canvas.width  = window.innerWidth;
@@ -34,41 +31,28 @@ export default function ParticleBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    for (let i = 0; i < COUNT; i++) {
-      const gold = Math.random() < 0.6;
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
-        radius: gold ? Math.random() * 1.7 + 0.8 : Math.random() * 1.0 + 0.5,
-        opacity: gold ? Math.random() * 0.08 + 0.06 : Math.random() * 0.04 + 0.03,
-        gold,
-      });
-    }
-
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connection lines
+      // Constellation lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < CONNECT_DIST) {
-            const alpha = (1 - dist / CONNECT_DIST) * 0.05;
+          if (dist < 130) {
+            const alpha = (1 - dist / 130) * 0.12;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.7;
             ctx.stroke();
           }
         }
       }
 
-      // Draw particles
+      // Particles
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
@@ -81,7 +65,7 @@ export default function ParticleBackground() {
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.gold
           ? `rgba(201,168,76,${p.opacity})`
-          : `rgba(255,255,255,${p.opacity})`;
+          : `rgba(255,255,255,${p.opacity * 0.6})`;
         ctx.fill();
       });
 
@@ -96,10 +80,56 @@ export default function ParticleBackground() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      aria-hidden
-    />
+    <>
+      {/* Aurora orbs */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden>
+        <div
+          style={{
+            position: 'absolute',
+            top: '10%',
+            left: '-10%',
+            width: '55vw',
+            height: '55vw',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
+            animation: 'aurora-1 18s ease-in-out infinite',
+            filter: 'blur(40px)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: '40%',
+            right: '-15%',
+            width: '60vw',
+            height: '60vw',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)',
+            animation: 'aurora-2 22s ease-in-out infinite',
+            filter: 'blur(50px)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-20%',
+            left: '30%',
+            width: '50vw',
+            height: '50vw',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(30,80,40,0.06) 0%, transparent 70%)',
+            animation: 'aurora-3 26s ease-in-out infinite',
+            filter: 'blur(60px)',
+          }}
+        />
+      </div>
+
+      {/* Constellation canvas */}
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 pointer-events-none z-0"
+        aria-hidden
+      />
+    </>
   );
 }
