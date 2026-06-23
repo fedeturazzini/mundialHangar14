@@ -12,18 +12,21 @@ export default function Icon() {
           width: '100%',
           height: '100%',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '4px',
+          gap: 1,
         }}
       >
+        <span style={{ fontSize: 9, lineHeight: 1 }}>⚽</span>
         <span
           style={{
             color: '#C9A84C',
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: 900,
             letterSpacing: '-0.5px',
             fontFamily: 'sans-serif',
+            lineHeight: 1,
           }}
         >
           H14

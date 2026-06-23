@@ -6,7 +6,17 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Mundial FIFA · Hangar 14",
-  description: "Torneo FIFA — 3 de Julio · Hangar 14",
+  description: "Torneo FIFA entre amigos — 3 de Julio · Hangar 14",
+  openGraph: {
+    title: "Mundial FIFA · Hangar 14",
+    description: "Torneo FIFA entre amigos — 3 de Julio · Hangar 14",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mundial FIFA · Hangar 14",
+    description: "Torneo FIFA entre amigos — 3 de Julio · Hangar 14",
+  },
 };
 
 export default function RootLayout({
