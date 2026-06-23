@@ -59,33 +59,39 @@ export default function TeamModal({ team, onClose }: Props) {
               {team.players.map((player, pi) => (
                 <motion.div
                   key={player.name}
-                  className="flex flex-col items-center text-center p-5 rounded-xl"
-                  style={{ background: '#131313', border: '1px solid rgba(255,255,255,0.08)' }}
+                  className="relative rounded-xl overflow-hidden"
+                  style={{ minHeight: '220px', background: '#131313' }}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: pi * 0.08 }}
                 >
-                  {/* Foto del jugador */}
+                  {/* Foto de fondo o iniciales */}
+                  {player.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={player.photo}
+                      alt={player.name}
+                      className="absolute inset-0 w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center text-4xl font-black"
+                      style={{ color: '#C9A84C' }}
+                    >
+                      {getInitials(player)}
+                    </div>
+                  )}
+
+                  {/* Gradiente inferior + nombre */}
                   <div
-                    className="w-20 h-20 rounded-full overflow-hidden mb-3 flex-shrink-0"
-                    style={{ border: '2px solid rgba(201,168,76,0.3)' }}
+                    className="absolute bottom-0 left-0 right-0 px-3 py-2.5"
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)' }}
                   >
-                    {player.photo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={player.photo} alt={player.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center justify-center text-xl font-black"
-                        style={{ background: '#1a1a1a', color: '#C9A84C' }}
-                      >
-                        {getInitials(player)}
-                      </div>
-                    )}
+                    <p className="text-sm font-bold leading-tight">{player.name}</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(201,168,76,0.7)' }}>
+                      Jugador {pi + 1}
+                    </p>
                   </div>
-                  <p className="text-sm font-semibold leading-snug">{player.name}</p>
-                  <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    Jugador {pi + 1}
-                  </p>
                 </motion.div>
               ))}
             </div>
