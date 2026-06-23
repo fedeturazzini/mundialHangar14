@@ -29,8 +29,9 @@ export default function ParticleBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
     if (!ctx) return;
+    const c: CanvasRenderingContext2D = ctx;
 
     let animId: number;
     let frame = 0;
@@ -74,48 +75,48 @@ export default function ParticleBackground() {
     ];
 
     function drawField(W: number, H: number) {
-      ctx.save();
+      c.save();
 
       // Green pitch radial gradient
-      const grd = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, H * 0.65);
+      const grd = c.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, H * 0.65);
       grd.addColorStop(0, 'rgba(20,55,25,0.16)');
       grd.addColorStop(1, 'transparent');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, 0, W, H);
+      c.fillStyle = grd;
+      c.fillRect(0, 0, W, H);
 
       // Field lines
-      ctx.lineWidth = 0.8;
+      c.lineWidth = 0.8;
       const fx = W * 0.08, fy = H * 0.06, fw = W * 0.84, fh = H * 0.88;
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.055)';
-      ctx.strokeRect(fx, fy, fw, fh);
+      c.strokeStyle = 'rgba(255,255,255,0.055)';
+      c.strokeRect(fx, fy, fw, fh);
 
-      ctx.beginPath();
-      ctx.moveTo(fx, fy + fh / 2);
-      ctx.lineTo(fx + fw, fy + fh / 2);
-      ctx.stroke();
+      c.beginPath();
+      c.moveTo(fx, fy + fh / 2);
+      c.lineTo(fx + fw, fy + fh / 2);
+      c.stroke();
 
       const cxF = fx + fw / 2, cyF = fy + fh / 2, cr = fh * 0.15;
-      ctx.beginPath();
-      ctx.arc(cxF, cyF, cr, 0, Math.PI * 2);
-      ctx.stroke();
+      c.beginPath();
+      c.arc(cxF, cyF, cr, 0, Math.PI * 2);
+      c.stroke();
 
-      ctx.beginPath();
-      ctx.arc(cxF, cyF, 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.07)';
-      ctx.fill();
+      c.beginPath();
+      c.arc(cxF, cyF, 2, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(255,255,255,0.07)';
+      c.fill();
 
       // Penalty areas
       const pbw = fw * 0.44, pbh = fh * 0.20;
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-      ctx.strokeRect(fx + (fw - pbw) / 2, fy, pbw, pbh);
-      ctx.strokeRect(fx + (fw - pbw) / 2, fy + fh - pbh, pbw, pbh);
+      c.strokeStyle = 'rgba(255,255,255,0.05)';
+      c.strokeRect(fx + (fw - pbw) / 2, fy, pbw, pbh);
+      c.strokeRect(fx + (fw - pbw) / 2, fy + fh - pbh, pbw, pbh);
 
       // Goal areas
       const gbw = fw * 0.18, gbh = fh * 0.08;
-      ctx.strokeStyle = 'rgba(255,255,255,0.035)';
-      ctx.strokeRect(fx + (fw - gbw) / 2, fy, gbw, gbh);
-      ctx.strokeRect(fx + (fw - gbw) / 2, fy + fh - gbh, gbw, gbh);
+      c.strokeStyle = 'rgba(255,255,255,0.035)';
+      c.strokeRect(fx + (fw - gbw) / 2, fy, gbw, gbh);
+      c.strokeRect(fx + (fw - gbw) / 2, fy + fh - gbh, gbw, gbh);
 
       // Corner arcs
       const cornerR = fh * 0.035;
@@ -125,14 +126,14 @@ export default function ParticleBackground() {
         [fx,      fy + fh, -Math.PI / 2],
         [fx + fw, fy + fh, Math.PI],
       ];
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      c.strokeStyle = 'rgba(255,255,255,0.04)';
       corners.forEach(([cx2, cy2, sa]) => {
-        ctx.beginPath();
-        ctx.arc(cx2, cy2, cornerR, sa, sa + Math.PI / 2);
-        ctx.stroke();
+        c.beginPath();
+        c.arc(cx2, cy2, cornerR, sa, sa + Math.PI / 2);
+        c.stroke();
       });
 
-      ctx.restore();
+      c.restore();
     }
 
     function drawSpotlight(s: Spotlight, W: number, H: number) {
@@ -142,27 +143,27 @@ export default function ParticleBackground() {
       const ex  = sx + Math.sin(a) * len * s.spread * 5;
       const spread = len * s.spread;
 
-      ctx.save();
-      ctx.globalAlpha = s.op;
-      const grad = ctx.createRadialGradient(sx, 0, 0, sx, 0, len);
+      c.save();
+      c.globalAlpha = s.op;
+      const grad = c.createRadialGradient(sx, 0, 0, sx, 0, len);
       grad.addColorStop(0, `rgba(${s.color},0.9)`);
       grad.addColorStop(1, `rgba(${s.color},0)`);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.moveTo(sx, 0);
-      ctx.lineTo(ex - spread, H * s.len);
-      ctx.lineTo(ex + spread, H * s.len);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      c.fillStyle = grad;
+      c.beginPath();
+      c.moveTo(sx, 0);
+      c.lineTo(ex - spread, H * s.len);
+      c.lineTo(ex + spread, H * s.len);
+      c.closePath();
+      c.fill();
+      c.restore();
     }
 
     const draw = () => {
       const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
+      c.clearRect(0, 0, W, H);
 
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, W, H);
+      c.fillStyle = '#050505';
+      c.fillRect(0, 0, W, H);
 
       drawField(W, H);
       spotlights.forEach(s => drawSpotlight(s, W, H));
@@ -174,12 +175,12 @@ export default function ParticleBackground() {
           const dy   = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(201,168,76,${(1 - dist / 120) * 0.12})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
+            c.beginPath();
+            c.moveTo(particles[i].x, particles[i].y);
+            c.lineTo(particles[j].x, particles[j].y);
+            c.strokeStyle = `rgba(201,168,76,${(1 - dist / 120) * 0.12})`;
+            c.lineWidth = 0.6;
+            c.stroke();
           }
         }
       }
@@ -189,12 +190,12 @@ export default function ParticleBackground() {
         p.x += p.vx; p.y += p.vy;
         if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
         if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.gold
+        c.beginPath();
+        c.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        c.fillStyle = p.gold
           ? `rgba(201,168,76,${p.op})`
           : `rgba(255,255,255,${p.op * 0.55})`;
-        ctx.fill();
+        c.fill();
       });
 
       // PlayStation symbols
@@ -203,16 +204,16 @@ export default function ParticleBackground() {
         p.rot += p.rotV;
         if (p.x < -40) p.x = W + 40; if (p.x > W + 40) p.x = -40;
         if (p.y < -40) p.y = H + 40; if (p.y > H + 40) p.y = -40;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.globalAlpha = p.op;
-        ctx.font = `${p.size}px Arial, sans-serif`;
-        ctx.fillStyle = 'rgba(180,155,255,1)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(p.sym, 0, 0);
-        ctx.restore();
+        c.save();
+        c.translate(p.x, p.y);
+        c.rotate(p.rot);
+        c.globalAlpha = p.op;
+        c.font = `${p.size}px Arial, sans-serif`;
+        c.fillStyle = 'rgba(180,155,255,1)';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(p.sym, 0, 0);
+        c.restore();
       });
 
       frame++;
