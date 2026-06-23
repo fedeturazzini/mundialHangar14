@@ -208,7 +208,7 @@ export default function Home() {
           <div className="flex items-start justify-between mb-8">
             <div>
               <p className="text-[10px] text-white/25 tracking-[0.3em] uppercase mb-2 font-medium">
-                3 de Julio · Hangar 14
+                3 de Julio · 18:30 hs · Hangar 14
               </p>
               <h1 className="font-black tracking-tight leading-none" style={{ fontSize: 'clamp(1.8rem, 5vw, 3.5rem)' }}>
                 Mundial{' '}
