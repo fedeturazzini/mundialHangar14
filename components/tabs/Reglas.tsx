@@ -62,6 +62,7 @@ const SECTIONS: RuleSection[] = [
     title: 'Lo importante',
     items: [
       'El campeón se lleva la gloria eterna de Hangar 14',
+      'Tomar unas ricas birritas y comer riquitico 🍺🍗',
     ],
   },
 ];

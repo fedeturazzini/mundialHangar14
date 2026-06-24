@@ -26,8 +26,8 @@ const TABS = [
   { id: 'equipos',  label: 'Equipos'  },
   { id: 'grupos',   label: 'Grupos'   },
   { id: 'partidos', label: 'Partidos' },
-  { id: 'reglas',   label: 'Reglas'   },
   { id: 'bracket',  label: 'Bracket'  },
+  { id: 'reglas',   label: 'Reglas'   },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
