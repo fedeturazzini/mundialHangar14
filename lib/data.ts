@@ -20,7 +20,7 @@ export interface Group {
 
 export interface Match {
   id: string;
-  phase: 'group' | 'semi' | 'final';
+  phase: 'group' | 'semi' | 'tercero' | 'final';
   group?: number;
   home: Team | null;
   away: Team | null;
@@ -53,8 +53,9 @@ const MATCH_SCHEDULE: Record<string, { round: number; ps: 1 | 2 }> = {
   // ── Semifinales ────────────────────────────────────────────
   semi1:     { round: 6, ps: 1 },
   semi2:     { round: 6, ps: 2 },
-  // ── Final ──────────────────────────────────────────────────
-  final:     { round: 7, ps: 1 },
+  // ── Ronda Final (en paralelo) ───────────────────────────────
+  final:     { round: 7, ps: 1 },  // Final
+  tercero:   { round: 7, ps: 2 },  // 3° y 4° puesto
 };
 
 export const GROUPS: Group[] = [
@@ -112,9 +113,10 @@ export function buildInitialMatches(): Match[] {
     }
   });
 
-  matches.push({ id: 'semi1', phase: 'semi', home: null, away: null, score: null, seedHome: '1A', seedAway: '2B', ...MATCH_SCHEDULE['semi1'] });
-  matches.push({ id: 'semi2', phase: 'semi', home: null, away: null, score: null, seedHome: '1B', seedAway: '2A', ...MATCH_SCHEDULE['semi2'] });
-  matches.push({ id: 'final', phase: 'final', home: null, away: null, score: null, ...MATCH_SCHEDULE['final'] });
+  matches.push({ id: 'semi1',   phase: 'semi',    home: null, away: null, score: null, seedHome: '1A', seedAway: '2B', ...MATCH_SCHEDULE['semi1'] });
+  matches.push({ id: 'semi2',   phase: 'semi',    home: null, away: null, score: null, seedHome: '1B', seedAway: '2A', ...MATCH_SCHEDULE['semi2'] });
+  matches.push({ id: 'final',   phase: 'final',   home: null, away: null, score: null, ...MATCH_SCHEDULE['final'] });
+  matches.push({ id: 'tercero', phase: 'tercero', home: null, away: null, score: null, ...MATCH_SCHEDULE['tercero'] });
 
   return matches.sort((a, b) => a.round - b.round || a.ps - b.ps);
 }
@@ -161,23 +163,33 @@ export function getWinner(match: Match): Team | null {
   return null;
 }
 
+function getLoser(match: Match): Team | null {
+  if (!match.score) return null;
+  if (match.score[0] > match.score[1]) return match.away;
+  if (match.score[1] > match.score[0]) return match.home;
+  return null;
+}
+
 export function resolveKnockout(matches: Match[]): Match[] {
   const next = matches.map(m => ({ ...m, score: m.score ? [...m.score] as [number,number] : null }));
 
   const top2A = computeStandings(0, next).slice(0, 2).map(r => r.team);
   const top2B = computeStandings(1, next).slice(0, 2).map(r => r.team);
 
-  const semi1 = next.find(m => m.id === 'semi1')!;
-  const semi2 = next.find(m => m.id === 'semi2')!;
-  const fin   = next.find(m => m.id === 'final')!;
+  const semi1   = next.find(m => m.id === 'semi1')!;
+  const semi2   = next.find(m => m.id === 'semi2')!;
+  const fin     = next.find(m => m.id === 'final')!;
+  const tercero = next.find(m => m.id === 'tercero')!;
 
   semi1.home = top2A[0] ?? null;
   semi1.away = top2B[1] ?? null;
   semi2.home = top2B[0] ?? null;
   semi2.away = top2A[1] ?? null;
 
-  fin.home = semi1.score ? getWinner(semi1) : null;
-  fin.away = semi2.score ? getWinner(semi2) : null;
+  fin.home     = semi1.score ? getWinner(semi1) : null;
+  fin.away     = semi2.score ? getWinner(semi2) : null;
+  tercero.home = semi1.score ? getLoser(semi1)  : null;
+  tercero.away = semi2.score ? getLoser(semi2)  : null;
 
   return next;
 }

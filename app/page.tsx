@@ -11,6 +11,7 @@ import Equipos from '@/components/tabs/Equipos';
 import Grupos from '@/components/tabs/Grupos';
 import Partidos from '@/components/tabs/Partidos';
 import Bracket from '@/components/tabs/Bracket';
+import Reglas from '@/components/tabs/Reglas';
 
 import {
   Team,
@@ -25,6 +26,7 @@ const TABS = [
   { id: 'equipos',  label: 'Equipos'  },
   { id: 'grupos',   label: 'Grupos'   },
   { id: 'partidos', label: 'Partidos' },
+  { id: 'reglas',   label: 'Reglas'   },
   { id: 'bracket',  label: 'Bracket'  },
 ] as const;
 
@@ -297,6 +299,7 @@ export default function Home() {
                 onEditMatch={setEditingMatch}
               />
             )}
+            {activeTab === 'reglas'   && <Reglas />}
             {activeTab === 'bracket'  && <Bracket matches={resolvedMatches} />}
           </motion.div>
         </AnimatePresence>

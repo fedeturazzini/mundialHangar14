@@ -19,7 +19,7 @@ function MatchRow({
   isAdmin: boolean;
   onEditMatch: (m: Match) => void;
 }) {
-  const isFinal  = match.phase === 'final';
+  const isFinal  = match.phase === 'final' || match.phase === 'tercero';
   const hasTeams = !!(match.home && match.away);
   const canEdit  = isAdmin && hasTeams;
 
@@ -44,7 +44,7 @@ function MatchRow({
           PS{match.ps}
         </span>
         <span className="text-[10px] text-white/25 tracking-wider uppercase">
-          {match.phase === 'group' ? `Grupo ${match.group === 0 ? 'A' : 'B'}` : match.phase === 'semi' ? 'Semifinal' : 'Final'}
+          {match.phase === 'group' ? `Grupo ${match.group === 0 ? 'A' : 'B'}` : match.phase === 'semi' ? 'Semifinal' : match.phase === 'tercero' ? '3° y 4° Puesto' : 'Final'}
         </span>
         {match.score && (
           <span className="ml-auto text-[10px] text-white/30 tracking-wider uppercase">Finalizado</span>
@@ -122,6 +122,7 @@ function MatchRow({
 
 function roundLabel(round: number, phase: string): string {
   if (phase === 'semi') return 'Semifinales';
+  if (phase === 'tercero') return '3° y 4° Puesto';
   if (phase === 'final') return 'Final';
   return `Ronda ${round}`;
 }
@@ -138,7 +139,8 @@ export default function Partidos({ matches, isAdmin, onEditMatch }: Props) {
       {Array.from(rounds.entries()).map(([round, roundMatches], ri) => {
         const firstMatch = roundMatches[0];
         const isKnockout = firstMatch.phase !== 'group';
-        const label = roundLabel(round, firstMatch.phase);
+        const hasMixed = roundMatches.some(m => m.phase === 'final') && roundMatches.some(m => m.phase === 'tercero');
+        const label = hasMixed ? 'Ronda Final' : roundLabel(round, firstMatch.phase);
 
         return (
           <motion.div

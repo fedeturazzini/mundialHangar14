@@ -52,8 +52,9 @@ function BracketMatch({ match, borderGold = false }: { match: Match; borderGold?
 }
 
 export default function Bracket({ matches }: Props) {
-  const semis  = matches.filter(m => m.phase === 'semi');
-  const finals = matches.filter(m => m.phase === 'final');
+  const semis   = matches.filter(m => m.phase === 'semi');
+  const finals  = matches.filter(m => m.phase === 'final');
+  const terceros = matches.filter(m => m.phase === 'tercero');
 
   const champion = (() => {
     const fin = matches.find(m => m.phase === 'final');
@@ -74,13 +75,23 @@ export default function Bracket({ matches }: Props) {
         </div>
       </div>
 
+      {/* Final + 3° y 4° en paralelo */}
       <div>
-        <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Final</p>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          {finals.map(fin => (
-            <BracketMatch key={fin.id} match={fin} borderGold />
-          ))}
-        </motion.div>
+        <p className="text-xs text-white/30 tracking-widest uppercase mb-3">Ronda Final</p>
+        <div className="grid grid-cols-2 gap-3">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+            <p className="text-[10px] text-white/20 mb-1.5 uppercase tracking-widest" style={{ color: '#C9A84C' }}>Final · PS1</p>
+            {finals.map(fin => (
+              <BracketMatch key={fin.id} match={fin} borderGold />
+            ))}
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+            <p className="text-[10px] text-white/20 mb-1.5 uppercase tracking-widest">3° y 4° · PS2</p>
+            {terceros.map(t => (
+              <BracketMatch key={t.id} match={t} />
+            ))}
+          </motion.div>
+        </div>
       </div>
 
       {champion && (
