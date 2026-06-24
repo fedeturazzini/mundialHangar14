@@ -74,7 +74,7 @@ export const GROUPS: Group[] = [
         { name: 'Rober Curia',  short: 'Rober', photo: '/JugadoresFinal/RoberCuria.png' },
         { name: 'Santi Barcia', short: 'Santi', photo: '/JugadoresFinal/SantiagoBarcia.png' },
       ]},
-      { id: 'ned', name: 'Holanda', flag: '🇳🇱', code: 'NL', tentative: true, players: [
+      { id: 'ned', name: 'Holanda', flag: '🇳🇱', code: 'NL', tentative: false, players: [
         { name: 'Tomi Figueroa', short: 'Tomi', photo: '/JugadoresFinal/TomasFigueroa.png' },
         { name: 'Facu Diez',     short: 'Facu', photo: '/JugadoresFinal/FacundoDiez.png' },
       ]},
