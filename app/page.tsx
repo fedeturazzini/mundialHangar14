@@ -10,7 +10,6 @@ import TeamModal from '@/components/TeamModal';
 import Equipos from '@/components/tabs/Equipos';
 import Grupos from '@/components/tabs/Grupos';
 import Partidos from '@/components/tabs/Partidos';
-import Bracket from '@/components/tabs/Bracket';
 import Reglas from '@/components/tabs/Reglas';
 
 import {
@@ -26,7 +25,6 @@ const TABS = [
   { id: 'equipos',  label: 'Equipos'  },
   { id: 'grupos',   label: 'Grupos'   },
   { id: 'partidos', label: 'Partidos' },
-  { id: 'bracket',  label: 'Bracket'  },
   { id: 'reglas',   label: 'Reglas'   },
 ] as const;
 
@@ -300,7 +298,6 @@ export default function Home() {
               />
             )}
             {activeTab === 'reglas'   && <Reglas />}
-            {activeTab === 'bracket'  && <Bracket matches={resolvedMatches} />}
           </motion.div>
         </AnimatePresence>
       </div>
