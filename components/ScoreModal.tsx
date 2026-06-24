@@ -71,7 +71,7 @@ function ModalInner({ match, onClose, onSave, onClear }: Required<Props> & { mat
                 color: '#fff',
                 MozAppearance: 'textfield',
               } as React.CSSProperties}
-              onFocus={e => (e.target.style.borderColor = '#C9A84C')}
+              onFocus={e => { e.target.style.borderColor = '#C9A84C'; e.target.select(); }}
               onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
             />
           </div>
@@ -95,7 +95,7 @@ function ModalInner({ match, onClose, onSave, onClear }: Required<Props> & { mat
                 color: '#fff',
                 MozAppearance: 'textfield',
               } as React.CSSProperties}
-              onFocus={e => (e.target.style.borderColor = '#C9A84C')}
+              onFocus={e => { e.target.style.borderColor = '#C9A84C'; e.target.select(); }}
               onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
             />
           </div>
