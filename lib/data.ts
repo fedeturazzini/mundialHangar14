@@ -173,18 +173,25 @@ function getLoser(match: Match): Team | null {
 export function resolveKnockout(matches: Match[]): Match[] {
   const next = matches.map(m => ({ ...m, score: m.score ? [...m.score] as [number,number] : null }));
 
-  const top2A = computeStandings(0, next).slice(0, 2).map(r => r.team);
-  const top2B = computeStandings(1, next).slice(0, 2).map(r => r.team);
-
   const semi1   = next.find(m => m.id === 'semi1')!;
   const semi2   = next.find(m => m.id === 'semi2')!;
   const fin     = next.find(m => m.id === 'final')!;
   const tercero = next.find(m => m.id === 'tercero')!;
 
-  semi1.home = top2A[0] ?? null;
-  semi1.away = top2B[1] ?? null;
-  semi2.home = top2B[0] ?? null;
-  semi2.away = top2A[1] ?? null;
+  // Solo resolver semis si hay al menos un resultado de grupos cargado
+  const hasGroupResults = next.some(m => m.phase === 'group' && m.score !== null);
+
+  if (hasGroupResults) {
+    const top2A = computeStandings(0, next).slice(0, 2).map(r => r.team);
+    const top2B = computeStandings(1, next).slice(0, 2).map(r => r.team);
+    semi1.home = top2A[0] ?? null;
+    semi1.away = top2B[1] ?? null;
+    semi2.home = top2B[0] ?? null;
+    semi2.away = top2A[1] ?? null;
+  } else {
+    semi1.home = null; semi1.away = null;
+    semi2.home = null; semi2.away = null;
+  }
 
   fin.home     = semi1.score ? getWinner(semi1) : null;
   fin.away     = semi2.score ? getWinner(semi2) : null;
